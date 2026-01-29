@@ -30,7 +30,7 @@
             <!-- Folders will be injected here -->
         </div>
 
-        <button class="btn-settings" onclick="app.toggleSettings(true)" style="margin-top: 1.5rem;">
+        <button class="btn-settings" id="settingsMenu" onclick="app.toggleSettings(true)" style="margin-top: 1.5rem;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3" />
                 <path
@@ -140,11 +140,11 @@
             <div class="input-row">
                 <div class="input-group">
                     <label class="input-label">시작 날짜</label>
-                    <input type="date" id="startDateInput" required>
+                    <input type="date" id="startDateInput" max="9999-12-31" required>
                 </div>
                 <div class="input-group">
                     <label class="input-label">종료 날짜</label>
-                    <input type="date" id="endDateInput" required>
+                    <input type="date" id="endDateInput" max="9999-12-31" required>
                 </div>
             </div>
             <div class="input-group">

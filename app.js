@@ -77,7 +77,7 @@ const app = {
         const settingsFolderList = document.getElementById('settingsFolderList');
 
         const folderHtml = this.data.folders.map(folder => `
-            <div class="folder-item ${this.data.currentFolder === folder ? 'active' : ''}" onclick="app.selectFolder('${folder}')">
+            <div class="folder-item" data-folder="${folder}" onclick="app.selectFolder('${folder}')">
                 <span>📁 ${folder}</span>
             </div>
         `).join('');
@@ -154,11 +154,34 @@ const app = {
             taskForm.style.display = 'none';
         }
 
+        this.updateSidebarUI();
         this.renderTasks();
         await this.saveData(); // Save current folder state
 
         // Scroll to top on navigation
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    },
+
+    updateSidebarUI() {
+        // 1. Clear all active classes
+        document.querySelectorAll('.sidebar .folder-item, .sidebar .btn-settings').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // 2. Set active based on current state
+        if (document.getElementById('settingsView').style.display === 'flex') {
+            document.getElementById('settingsMenu').classList.add('active');
+        } else if (this.data.currentFolder === 'all') {
+            document.getElementById('allTasksMenu').classList.add('active');
+        } else if (this.data.currentFolder === 'all_with_form') {
+            document.getElementById('mainMenu').classList.add('active');
+        } else {
+            // Find the dynamic folder item using data attribute
+            const activeFolderItem = document.querySelector(`#folderList .folder-item[data-folder="${this.data.currentFolder}"]`);
+            if (activeFolderItem) {
+                activeFolderItem.classList.add('active');
+            }
+        }
     },
 
     updateFilterOptions() {
@@ -222,8 +245,17 @@ const app = {
 
         let leaveDays = 0;
         if (startDate && endDate) {
-            const start = new Date(startDate);
-            const end = new Date(endDate);
+            // 방어 코드: 연도가 4자리를 넘는 경우 9999로 제한
+            const fixYear = (dateStr) => {
+                const parts = dateStr.split('-');
+                if (parts[0].length > 4) parts[0] = '9999';
+                return parts.join('-');
+            };
+            const finalStart = fixYear(startDate);
+            const finalEnd = fixYear(endDate);
+
+            const start = new Date(finalStart);
+            const end = new Date(finalEnd);
             const diffTime = Math.abs(end - start);
             leaveDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         }
@@ -527,6 +559,7 @@ const app = {
             this.renderFolders();
             this.renderMembersInSettings();
         }
+        this.updateSidebarUI();
     },
 
     switchSettingsTab(tabId) {
