@@ -1139,3 +1139,44 @@ textarea:focus {
     align-items: center;
     gap: 0.5rem;
 }
+
+/* 다단계 카테고리 인덴트 및 아코디언 스타일 */
+.folder-item {
+    transition: all 0.2s ease;
+    min-height: 2.5rem;
+}
+
+.folder-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    color: var(--text-muted);
+}
+
+.folder-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--primary-color);
+}
+
+[data-theme='dark'] .folder-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.folder-toggle i {
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.folder-toggle.collapsed i {
+    transform: rotate(-90deg);
+}
+
+.folder-item[class*="depth-"] {
+    position: relative;
+}

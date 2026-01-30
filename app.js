@@ -10,7 +10,8 @@ const app = {
         currentFolder: "all",
         selectedMembers: [],
         tempSubTasks: [], // For task creation/edit form
-        statFilter: "all" // Dashboard filter state
+        statFilter: "all", // Dashboard filter state
+        collapsedFolders: [] // Folders that are currently collapsed
     },
     // 프리미엄 컬러 팔레트 (Professional & Soft)
     colors: [
@@ -73,6 +74,7 @@ const app = {
 
             this.data.members = data.members || ["강민구", "김철수", "이영희", "박지민", "최유진"];
             this.data.currentFolder = data.currentFolder || "all";
+            this.data.collapsedFolders = data.collapsedFolders || [];
         } catch (error) {
             console.error('Failed to load data:', error);
             // Fallback to localStorage if server is not available
@@ -101,7 +103,8 @@ const app = {
                     tasks: this.data.tasks,
                     folders: this.data.folders,
                     members: this.data.members,
-                    currentFolder: this.data.currentFolder
+                    currentFolder: this.data.currentFolder,
+                    collapsedFolders: this.data.collapsedFolders
                 })
             });
         } catch (error) {
@@ -120,12 +123,22 @@ const app = {
         if (!folderList) return;
 
         // 재귀적으로 폴더를 정렬된 평탄한 배열로 변환하는 헬퍼 함수
-        const getSortedFolders = (parentId = null, depth = 0) => {
+        const getSortedFolders = (parentId = null, depth = 0, isParentCollapsed = false) => {
             let result = [];
             const children = this.data.folders.filter(f => f.parent === parentId);
+
             children.forEach(c => {
-                result.push({ ...c, depth });
-                result = result.concat(getSortedFolders(c.name, depth + 1));
+                const isCollapsed = this.data.collapsedFolders.includes(c.name);
+                const hasChildren = this.data.folders.some(f => f.parent === c.name);
+
+                // 부모가 접혀있지 않을 때만 결과에 추가
+                if (!isParentCollapsed) {
+                    result.push({ ...c, depth, hasChildren, isCollapsed });
+                }
+
+                // 자식 노드 탐색 (상위가 접혀있으면 자식들도 '접힌 부모 상태'로 전달)
+                const childrenNodes = getSortedFolders(c.name, depth + 1, isParentCollapsed || isCollapsed);
+                result = result.concat(childrenNodes);
             });
             return result;
         };
@@ -134,13 +147,21 @@ const app = {
 
         const folderHtml = sortedFolders.map(folder => {
             const index = this.data.folders.findIndex(f => f.name === folder.name);
+            const isCollapsed = folder.isCollapsed;
+            const hasChildren = folder.hasChildren;
+
             return `
                 <div class="folder-item depth-${folder.depth} ${this.data.currentFolder === folder.name ? 'active' : ''}" 
                      data-folder="${folder.name}" onclick="app.selectFolder('${folder.name}')"
-                     style="padding-left: ${1 + (folder.depth * 1)}rem">
-                    <div style="display: flex; align-items: center; flex: 1;">
+                     style="padding-left: ${0.5 + (folder.depth * 1.2)}rem">
+                    <div style="display: flex; align-items: center; flex: 1; overflow: hidden;">
+                        ${hasChildren ? `
+                            <div class="folder-toggle ${isCollapsed ? 'collapsed' : ''}" onclick="event.stopPropagation(); app.toggleFolderCollapse('${folder.name}')">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        ` : '<div style="width: 20px;"></div>'}
                         <div class="folder-color-dot" style="background-color: ${folder.color || '#6366f1'}"></div>
-                        <span>${folder.name}</span>
+                        <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${folder.name}</span>
                     </div>
                     <div class="reorder-btns" onclick="event.stopPropagation()">
                         <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, -1)" title="위로">
@@ -154,6 +175,17 @@ const app = {
             `;
         }).join('');
         folderList.innerHTML = folderHtml;
+    },
+
+    toggleFolderCollapse(folderName) {
+        const index = this.data.collapsedFolders.indexOf(folderName);
+        if (index > -1) {
+            this.data.collapsedFolders.splice(index, 1);
+        } else {
+            this.data.collapsedFolders.push(folderName);
+        }
+        this.saveData();
+        this.renderFolders();
     },
 
     renderFolderSettings() {
