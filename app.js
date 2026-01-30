@@ -540,6 +540,7 @@ const app = {
             leaveDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
         }
 
+        let successMessage = "";
         if (editId) {
             const index = this.data.tasks.findIndex(t => t.id == editId);
             if (index > -1) {
@@ -551,6 +552,7 @@ const app = {
                     subtasks: [...this.data.tempSubTasks]
                 };
             }
+            successMessage = "업무 수정이 완료되었습니다.";
             this.cancelEdit();
         } else {
             const newTask = {
@@ -564,11 +566,13 @@ const app = {
             };
             this.data.tasks.unshift(newTask);
             this.syncWithECount(newTask);
+            successMessage = "업무 등록이 완료되었습니다.";
         }
 
         await this.saveData();
         this.renderTasks();
         this.cancelEdit();
+        alert(successMessage);
     },
 
     handleEditTask(id) {
