@@ -271,7 +271,7 @@ const app = {
         this.data.currentFolder = folder;
         this.data.statFilter = 'all';
 
-        const folderNameDisplay = folder === 'dashboard' ? '워크스페이스 대시보드' :
+        const folderNameDisplay = folder === 'dashboard' ? 'DashBoard' :
             (folder === 'all' ? '전체 업무 목록' :
                 (folder === 'all_with_form' ? '업무 등록' : folder));
         document.getElementById('currentFolderName').textContent = folderNameDisplay;
@@ -657,7 +657,7 @@ const app = {
         }
 
         const isMainPage = this.data.currentFolder === 'all_with_form';
-        const statsLabel = this.data.currentFolder === 'all' || isMainPage ? '전체' : `'${this.data.currentFolder}'`;
+        const statsLabel = (this.data.currentFolder === 'all' || isMainPage || this.data.currentFolder === 'dashboard') ? '전체' : `'${this.data.currentFolder}'`;
         const statsLabelElem = document.querySelectorAll('.stats-label')[0];
         if (statsLabelElem) statsLabelElem.textContent = `${statsLabel} 업무`;
 
