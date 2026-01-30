@@ -117,21 +117,27 @@ const app = {
 
     renderFolders() {
         const folderList = document.getElementById('folderList');
+        if (!folderList) return;
 
-        // 트리 구조를 위해 정렬 (부모가 먼저 나오고 자식이 그 뒤에 나오도록)
-        const sortedFolders = [];
-        const parents = this.data.folders.filter(f => !f.parent);
-        parents.forEach(p => {
-            sortedFolders.push({ ...p, depth: 0 });
-            const children = this.data.folders.filter(f => f.parent === p.name);
-            children.forEach(c => sortedFolders.push({ ...c, depth: 1 }));
-        });
+        // 재귀적으로 폴더를 정렬된 평탄한 배열로 변환하는 헬퍼 함수
+        const getSortedFolders = (parentId = null, depth = 0) => {
+            let result = [];
+            const children = this.data.folders.filter(f => f.parent === parentId);
+            children.forEach(c => {
+                result.push({ ...c, depth });
+                result = result.concat(getSortedFolders(c.name, depth + 1));
+            });
+            return result;
+        };
+
+        const sortedFolders = getSortedFolders();
 
         const folderHtml = sortedFolders.map(folder => {
             const index = this.data.folders.findIndex(f => f.name === folder.name);
             return `
-                <div class="folder-item ${folder.depth > 0 ? 'depth-' + folder.depth : ''} ${this.data.currentFolder === folder.name ? 'active' : ''}" 
-                     data-folder="${folder.name}" onclick="app.selectFolder('${folder.name}')">
+                <div class="folder-item depth-${folder.depth} ${this.data.currentFolder === folder.name ? 'active' : ''}" 
+                     data-folder="${folder.name}" onclick="app.selectFolder('${folder.name}')"
+                     style="padding-left: ${1 + (folder.depth * 1)}rem">
                     <div style="display: flex; align-items: center; flex: 1;">
                         <div class="folder-color-dot" style="background-color: ${folder.color || '#6366f1'}"></div>
                         <span>${folder.name}</span>
@@ -155,32 +161,56 @@ const app = {
         const parentFolderSelect = document.getElementById('parentFolderSelect');
 
         if (settingsFolderList) {
-            settingsFolderList.innerHTML = this.data.folders.map((folder, index) => `
-                <div class="settings-item" style="padding-left: ${folder.parent ? '1.5rem' : '0.75rem'}">
-                    <div style="display: flex; align-items: center; flex: 1;">
-                        <div class="folder-color-dot" style="background-color: ${folder.color || '#6366f1'}"></div>
-                        <span id="folder-name-${folder.name}">${folder.parent ? '┕ ' : ''} ${folder.name}</span>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <div class="reorder-btns" onclick="event.stopPropagation()">
-                            <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, -1)" title="위로">
-                                <i class="fas fa-chevron-up"></i>
-                            </button>
-                            <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, 1)" title="아래로">
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
+            const getSortedFolders = (parentId = null, depth = 0) => {
+                let result = [];
+                const children = this.data.folders.filter(f => f.parent === parentId);
+                children.forEach(c => {
+                    result.push({ ...c, depth });
+                    result = result.concat(getSortedFolders(c.name, depth + 1));
+                });
+                return result;
+            };
+
+            const sortedFolders = getSortedFolders();
+
+            settingsFolderList.innerHTML = sortedFolders.map(folder => {
+                const index = this.data.folders.findIndex(f => f.name === folder.name);
+                return `
+                    <div class="settings-item" style="padding-left: ${0.75 + (folder.depth * 1.5)}rem">
+                        <div style="display: flex; align-items: center; flex: 1;">
+                            <div class="folder-color-dot" style="background-color: ${folder.color || '#6366f1'}"></div>
+                            <span id="folder-name-${folder.name}">${folder.depth > 0 ? '┕ ' : ''} ${folder.name}</span>
                         </div>
-                        <button class="btn-delete" style="color: var(--primary-color);" onclick="app.handleEditFolder('${folder.name}')">수정</button>
-                        <button class="btn-delete" onclick="app.handleDeleteFolder('${folder.name}')">삭제</button>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <div class="reorder-btns" onclick="event.stopPropagation()">
+                                <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, -1)" title="위로">
+                                    <i class="fas fa-chevron-up"></i>
+                                </button>
+                                <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, 1)" title="아래로">
+                                    <i class="fas fa-chevron-down"></i>
+                                </button>
+                            </div>
+                            <button class="btn-delete" style="color: var(--primary-color);" onclick="app.handleEditFolder('${folder.name}')">수정</button>
+                            <button class="btn-delete" onclick="app.handleDeleteFolder('${folder.name}')">삭제</button>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         if (parentFolderSelect) {
-            const parents = this.data.folders.filter(f => !f.parent);
+            const getSortedFolders = (parentId = null, depth = 0) => {
+                let result = [];
+                const children = this.data.folders.filter(f => f.parent === parentId);
+                children.forEach(c => {
+                    result.push({ name: c.name, depth });
+                    result = result.concat(getSortedFolders(c.name, depth + 1));
+                });
+                return result;
+            };
+            const sorted = getSortedFolders();
             parentFolderSelect.innerHTML = '<option value="">부모 카테고리 없음 (상위)</option>' +
-                parents.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+                sorted.map(f => `<option value="${f.name}">${'&nbsp;'.repeat(f.depth * 4)}${f.depth > 0 ? '┕ ' : ''}${f.name}</option>`).join('');
         }
     },
 
@@ -209,16 +239,20 @@ const app = {
 
     updateFolderSelect() {
         const folderSelect = document.getElementById('folderSelect');
-        const grouped = [];
-        const parents = this.data.folders.filter(f => !f.parent);
-        parents.forEach(p => {
-            grouped.push({ name: p.name, label: p.name, isChild: false });
-            const children = this.data.folders.filter(f => f.parent === p.name);
-            children.forEach(c => {
-                grouped.push({ name: c.name, label: `&nbsp;&nbsp;&nbsp;┕ ${c.name}`, isChild: true });
-            });
-        });
+        if (!folderSelect) return;
 
+        const getSortedFolders = (parentId = null, depth = 0) => {
+            let result = [];
+            const children = this.data.folders.filter(f => f.parent === parentId);
+            children.forEach(c => {
+                const label = '&nbsp;'.repeat(depth * 4) + (depth > 0 ? '┕ ' : '') + c.name;
+                result.push({ name: c.name, label });
+                result = result.concat(getSortedFolders(c.name, depth + 1));
+            });
+            return result;
+        };
+
+        const grouped = getSortedFolders();
         folderSelect.innerHTML = grouped.map(folder => `
             <option value="${folder.name}">${folder.label}</option>
         `).join('');
@@ -424,13 +458,18 @@ const app = {
 
         if (filterCategory) {
             const current = filterCategory.value;
-            const grouped = [];
-            const parents = this.data.folders.filter(f => !f.parent);
-            parents.forEach(p => {
-                grouped.push({ name: p.name, label: p.name });
-                const children = this.data.folders.filter(f => f.parent === p.name);
-                children.forEach(c => grouped.push({ name: c.name, label: `\u00A0\u00A0\u2514 ${c.name}` }));
-            });
+            const getSortedFolders = (parentId = null, depth = 0) => {
+                let result = [];
+                const children = this.data.folders.filter(f => f.parent === parentId);
+                children.forEach(c => {
+                    const label = '\u00A0'.repeat(depth * 2) + (depth > 0 ? '\u2514 ' : '') + c.name;
+                    result.push({ name: c.name, label });
+                    result = result.concat(getSortedFolders(c.name, depth + 1));
+                });
+                return result;
+            };
+
+            const grouped = getSortedFolders();
 
             filterCategory.innerHTML = '<option value="all">모든 카테고리</option>' +
                 grouped.map(f => `<option value="${f.name}" ${f.name === current ? 'selected' : ''}>${f.label}</option>`).join('');
@@ -1115,6 +1154,9 @@ const app = {
     },
 
     async handleEditFolder(oldName) {
+        const folder = this.data.folders.find(f => f.name === oldName);
+        if (!folder) return;
+
         const newName = prompt(`'${oldName}' 카테고리의 새 이름을 입력하세요:`, oldName);
         if (newName && newName.trim() !== "" && newName !== oldName) {
             const trimmedName = newName.trim();
@@ -1122,11 +1164,15 @@ const app = {
                 alert("이미 존재하는 카테고리 이름입니다.");
                 return;
             }
+
             const index = this.data.folders.findIndex(f => f.name === oldName);
             if (index > -1) {
                 this.data.folders[index].name = trimmedName;
+                // 자식들의 부모 이름 업데이트
                 this.data.folders.forEach(f => { if (f.parent === oldName) f.parent = trimmedName; });
+                // 업무들의 카테고리 이름 업데이트
                 this.data.tasks.forEach(t => { if (t.folder === oldName) t.folder = trimmedName; });
+
                 await this.saveData();
                 this.renderFolders();
                 this.renderFolderSettings();
