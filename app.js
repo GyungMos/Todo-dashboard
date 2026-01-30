@@ -790,7 +790,10 @@ const app = {
             const annualLeaveBadge = isAnnualLeave ? '<span class="badge leave">연차</span>' : '';
             const ddayHtml = task.completed ? '' : calculateDDay(task.endDate);
             const prioClass = `prio-${task.priority || 'normal'}`;
-            const prioText = { urgent: '긴급', high: '높음', normal: '보통', low: '낮음' }[task.priority || 'normal'];
+            const prioText = {
+                critical: '최우선', urgent: '긴급', high: '높음',
+                normal: '보통', low: '낮음', lowest: '최하'
+            }[task.priority || 'normal'];
 
             const folder = this.data.folders.find(f => f.name === task.folder);
             const categoryColor = folder ? folder.color : 'var(--primary-color)';
@@ -1089,10 +1092,22 @@ const app = {
 
         const prioritySummaryElem = document.getElementById('prioritySummary');
         if (prioritySummaryElem) {
-            const prioMap = { urgent: '긴급', high: '높음', normal: '보통', low: '낮음' };
-            const prioIcons = { urgent: '🔥', high: '⚡', normal: '⚖️', low: '🧊' };
-            const prioColors = { urgent: '#ef4444', high: '#f59e0b', normal: '#6366f1', low: '#64748b' };
-            prioritySummaryElem.innerHTML = Object.keys(prioMap).map(prioKey => {
+            const prioMap = {
+                critical: '최우선', urgent: '긴급', high: '높음',
+                normal: '보통', low: '낮음', lowest: '최하'
+            };
+            const prioIcons = {
+                critical: '🚨', urgent: '🔥', high: '⚡',
+                normal: '⚖️', low: '🧊', lowest: '🍃'
+            };
+            const prioColors = {
+                critical: '#7c3aed', urgent: '#ef4444', high: '#f59e0b',
+                normal: '#3b82f6', low: '#64748b', lowest: '#94a3b8'
+            };
+            // 명시적 순서 정의
+            const order = ['critical', 'urgent', 'high', 'normal', 'low', 'lowest'];
+
+            prioritySummaryElem.innerHTML = order.map(prioKey => {
                 const count = activeTasks.filter(t => (t.priority || 'normal') === prioKey).length;
                 return `
                     <div class="prio-summary-item">
