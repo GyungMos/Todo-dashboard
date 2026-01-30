@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>업무 대시보드 - To-do List</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- FullCalendar -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -16,10 +20,17 @@
     <!-- Sidebar -->
     <aside class="sidebar">
         <h1>To Do List</h1>
-        <div class="folder-item" id="allTasksMenu" onclick="app.selectFolder('all')" style="margin-top: 1rem;">
-            <span>📋 전체 업무 내역</span>
+        <div class="sidebar-label">전체 메뉴</div>
+        <div class="folder-item" id="dashboardMenu" onclick="app.selectFolder('dashboard')">
+            <span>📊 Dashboard</span>
         </div>
-        <div class="folder-item" id="mainMenu" onclick="app.goToMain()" style="margin-bottom: 0.5rem;">
+        <div class="folder-item" id="allTasksMenu" onclick="app.selectFolder('all')">
+            <span>🏠 전체 업무 목록</span>
+        </div>
+        <div class="folder-item" id="calendarMenu" onclick="app.toggleCalendarView(true)">
+            <span>📅 달력으로 보기</span>
+        </div>
+        <div class="folder-item" id="mainMenu" onclick="app.goToMain()">
             <span>📝 업무 등록</span>
         </div>
 
@@ -50,7 +61,7 @@
             <div style="display: flex; gap: 1rem; align-items: center;">
                 <div class="theme-toggle"
                     style="cursor: pointer; padding: 0.5rem; background: var(--card-bg); border-radius: 0.5rem; border: 1px solid var(--border-color);"
-                    onclick="document.body.dataset.theme = document.body.dataset.theme === 'dark' ? 'light' : 'dark'">
+                    onclick="app.toggleTheme()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="5" />
                         <path
@@ -60,209 +71,272 @@
             </div>
         </header>
 
-        <!-- Multi-Filter Bar -->
-        <div class="filter-section">
-            <div class="filter-row">
-                <div class="filter-group" style="flex: 2;">
-                    <div class="search-bar">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <circle cx="11" cy="11" r="8" />
-                            <path d="M21 21l-4.35-4.35" />
-                        </svg>
-                        <input type="text" id="searchInput" placeholder="업무 제목 또는 내용 검색..."
-                            oninput="app.handleFilterChange()">
+        <!-- Calendar View -->
+        <div id="calendarView"
+            style="display: none; margin-bottom: 3rem; background: var(--card-bg); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow);">
+            <div id="calendar"></div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" style="display: none; margin-bottom: 2rem;">
+            <div class="stats-grid" id="statsDashboard">
+                <div class="stats-card" id="stat-all" onclick="app.setStatFilter('all')">
+                    <div class="stats-label">전체 업무</div>
+                    <div class="stats-value" id="totalTasksCount">0</div>
+                </div>
+                <div class="stats-card" id="stat-active" onclick="app.setStatFilter('active')">
+                    <div class="stats-label">진행 중</div>
+                    <div class="stats-value" id="activeTasksCount" style="color: var(--primary-color);">0</div>
+                </div>
+                <div class="stats-card" id="stat-urgent" onclick="app.setStatFilter('urgent')">
+                    <div class="stats-label">마감 임박</div>
+                    <div class="stats-value" id="urgentTasksCount" style="color: #ef4444;">0</div>
+                </div>
+                <div class="stats-card" id="stat-completed" onclick="app.setStatFilter('completed')">
+                    <div class="stats-label">완료</div>
+                    <div class="stats-value" id="completedTasksCount" style="color: #10b981;">0</div>
+                </div>
+            </div>
+
+            <!-- Enhanced Visualization Charts -->
+            <div class="chart-section" id="chartSection">
+                <div class="chart-card">
+                    <h3 class="chart-title">📈 <span id="trendChartTitle">주간 활동 트렌드 (최근 7일)</span></h3>
+                    <div class="chart-container">
+                        <canvas id="weeklyTrendChart"></canvas>
                     </div>
                 </div>
-                <div class="filter-group">
-                    <select id="filterCategory" onchange="app.handleFilterChange()">
-                        <option value="all">모든 카테고리</option>
-                    </select>
+                <div class="chart-card">
+                    <h3 class="chart-title">📊 <span id="distChartTitle">카테고리별 업무 분포</span></h3>
+                    <div class="chart-container">
+                        <canvas id="categoryDistChart"></canvas>
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <select id="filterAssignee" onchange="app.handleFilterChange()">
-                        <option value="all">모든 담당자</option>
-                    </select>
+            </div>
+
+            <!-- Dashboard Summary Widgets -->
+            <div class="dashboard-widgets-grid">
+                <!-- A: Urgent Top 5 List -->
+                <div class="widget-card">
+                    <h3 class="widget-title">🚨 마감 임박 업무 (Top 5)</h3>
+                    <div class="summary-list" id="urgentSummaryList">
+                        <!-- Items will be injected here -->
+                    </div>
                 </div>
-                <div class="filter-group">
-                    <select id="filterPriority" onchange="app.handleFilterChange()">
-                        <option value="all">모든 우선순위</option>
-                        <option value="urgent">긴급</option>
-                        <option value="high">높음</option>
-                        <option value="normal">보통</option>
-                        <option value="low">낮음</option>
-                    </select>
+
+                <!-- B: Category Progress -->
+                <div class="widget-card">
+                    <h3 class="widget-title">📊 프로젝트 진척도</h3>
+                    <div class="progress-list" id="progressList">
+                        <!-- Progress bars will be injected here -->
+                    </div>
+                </div>
+
+                <!-- C: Priority Status -->
+                <div class="widget-card">
+                    <h3 class="widget-title">⚖️ 우선순위 현황</h3>
+                    <div class="prio-summary-grid" id="prioritySummary">
+                        <!-- Priority counts will be injected here -->
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Statistics Dashboard -->
-        <div class="stats-grid" id="statsDashboard">
-            <div class="stats-card" id="stat-all" onclick="app.setStatFilter('all')">
-                <div class="stats-label">전체 업무</div>
-                <div class="stats-value" id="totalTasksCount">0</div>
+        <div id="taskListView">
+            <!-- Multi-Filter Bar -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group" style="flex: 2;">
+                        <div class="search-bar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
+                            </svg>
+                            <input type="text" id="searchInput" placeholder="업무 제목 또는 내용 검색..."
+                                oninput="app.handleFilterChange()">
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <select id="filterCategory" onchange="app.handleFilterChange()">
+                            <option value="all">모든 카테고리</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select id="filterAssignee" onchange="app.handleFilterChange()">
+                            <option value="all">모든 담당자</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select id="filterPriority" onchange="app.handleFilterChange()">
+                            <option value="all">모든 우선순위</option>
+                            <option value="urgent">긴급</option>
+                            <option value="high">높음</option>
+                            <option value="normal">보통</option>
+                            <option value="low">낮음</option>
+                        </select>
+                    </div>
+                </div>
             </div>
-            <div class="stats-card" id="stat-active" onclick="app.setStatFilter('active')">
-                <div class="stats-label">진행 중</div>
-                <div class="stats-value" id="activeTasksCount" style="color: var(--primary-color);">0</div>
-            </div>
-            <div class="stats-card" id="stat-urgent" onclick="app.setStatFilter('urgent')">
-                <div class="stats-label">마감 임박</div>
-                <div class="stats-value" id="urgentTasksCount" style="color: #ef4444;">0</div>
-            </div>
-            <div class="stats-card" id="stat-completed" onclick="app.setStatFilter('completed')">
-                <div class="stats-label">완료</div>
-                <div class="stats-value" id="completedTasksCount" style="color: #10b981;">0</div>
-            </div>
-        </div>
 
-        <!-- New Task Form -->
-        <form class="task-form" id="taskForm">
-            <div class="input-row">
+            <!-- New Task Form -->
+            <form class="task-form" id="taskForm">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">업무 카테고리</label>
+                        <select id="folderSelect" required></select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">업무 제목</label>
+                        <input type="text" id="titleInput" placeholder="예: [연차] 개인 사유" required>
+                    </div>
+                    <div class="input-group" style="flex: 0.5;">
+                        <label class="input-label">우선순위</label>
+                        <select id="prioritySelect">
+                            <option value="urgent">🚨 긴급</option>
+                            <option value="high">🔥 높음</option>
+                            <option value="normal" selected>⚖️ 보통</option>
+                            <option value="low">🧊 낮음</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">시작 날짜</label>
+                        <input type="date" id="startDateInput" max="9999-12-31" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">종료 날짜</label>
+                        <input type="date" id="endDateInput" max="9999-12-31" required>
+                    </div>
+                </div>
+
                 <div class="input-group">
-                    <label class="input-label">업무 카테고리</label>
-                    <select id="folderSelect" required></select>
+                    <label class="input-label">담당자 선택</label>
+                    <div class="member-selector" id="memberSelector">
+                        <!-- Members will be injected here -->
+                    </div>
                 </div>
+
                 <div class="input-group">
-                    <label class="input-label">업무 제목</label>
-                    <input type="text" id="titleInput" placeholder="예: [연차] 개인 사유" required>
+                    <label class="input-label">설명 및 메모</label>
+                    <textarea id="notesInput" placeholder="업무에 대한 상세 설명을 입력하세요..." rows="3"></textarea>
                 </div>
-                <div class="input-group" style="flex: 0.5;">
-                    <label class="input-label">우선순위</label>
-                    <select id="prioritySelect">
-                        <option value="normal">보통</option>
-                        <option value="high">높음</option>
-                        <option value="urgent">긴급</option>
-                        <option value="low">낮음</option>
-                    </select>
-                </div>
-            </div>
-            <div class="input-row">
+
+                <!-- Sub-task Section -->
                 <div class="input-group">
-                    <label class="input-label">시작 날짜</label>
-                    <input type="date" id="startDateInput" max="9999-12-31" required>
-                </div>
-                <div class="input-group">
-                    <label class="input-label">종료 날짜</label>
-                    <input type="date" id="endDateInput" max="9999-12-31" required>
-                </div>
-            </div>
-            <div class="input-group">
-                <label class="input-label">담당자 선택</label>
-                <div class="member-selector" id="memberSelector">
-                    <!-- Members will be injected here -->
-                </div>
-            </div>
-            <div class="input-row">
-                <div class="input-group" style="flex: 2;">
-                    <label class="input-label">세부 체크리스트</label>
-                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="text" id="subTaskInput" placeholder="하위 업무를 입력하세요..."
-                            onkeypress="if(event.key === 'Enter') { event.preventDefault(); app.handleAddSubTask(); }">
-                        <button type="button" class="btn-add" style="width: auto; height: 38px; white-space: nowrap;"
+                    <label class="input-label">체크리스트 (Sub-tasks)</label>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" id="subTaskInput" placeholder="추가할 하위 업무 입력...">
+                        <button type="button" class="btn-add" style="width: auto; white-space: nowrap;"
                             onclick="app.handleAddSubTask()">추가</button>
                     </div>
                     <div id="subTaskFormList"
-                        style="display: flex; flex-direction: column; gap: 0.4rem; padding: 0.5rem; background: rgba(0,0,0,0.03); border-radius: 0.5rem; min-height: 20px;">
-                        <!-- Temporary sub-tasks will appear here -->
+                        style="display: flex; flex-direction: column; gap: 0.5rem; background: rgba(0,0,0,0.02); padding: 1rem; border-radius: 0.5rem;">
+                        <!-- Temp sub-tasks will be here -->
                     </div>
                 </div>
-                <div class="input-group" style="flex: 1;">
-                    <label class="input-label">기타 메모</label>
-                    <textarea id="notesInput" placeholder="추가 특이사항..." rows="4" style="height: 85px;"></textarea>
+
+                <input type="hidden" id="editTaskId">
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn-add" id="submitBtn">업무 등록하기</button>
+                    <button type="button" class="btn-delete" id="cancelEditBtn" style="display: none; width: auto;"
+                        onclick="app.cancelEdit()">취소</button>
+                </div>
+            </form>
+
+            <div class="section">
+                <h3 class="section-title">🚀 진행 중인 업무</h3>
+                <div class="task-list" id="activeTaskList">
+                    <!-- Tasks will be injected here -->
                 </div>
             </div>
-            <input type="hidden" id="editTaskId" value="">
-            <div style="display: flex; gap: 0.5rem;">
-                <button type="submit" class="btn-add" id="submitBtn">업무 등록하기</button>
-                <button type="button" class="btn-add" id="cancelEditBtn"
-                    style="display: none; background: var(--text-muted);" onclick="app.cancelEdit()">취소</button>
-            </div>
-        </form>
 
-        <!-- Active Tasks -->
-        <section class="task-section">
-            <h3 class="section-title">
-                <span style="color: var(--primary-color);">●</span> 진행 중인 업무
-            </h3>
-            <div class="task-list" id="activeTaskList">
-                <!-- Tasks will be injected here -->
+            <div class="section">
+                <h3 class="section-title">✅ 완료된 업무</h3>
+                <div class="task-list" id="completedTaskList">
+                    <!-- Completed tasks will be injected here -->
+                </div>
             </div>
-        </section>
-
-        <!-- Completed Tasks -->
-        <section class="task-section">
-            <h3 class="section-title">
-                <span style="color: #10b981;">✓</span> 완료된 업무
-            </h3>
-            <div class="task-list" id="completedTaskList">
-                <!-- Completed tasks will be injected here -->
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Settings View Layer -->
+    <!-- Settings Modal -->
     <div id="settingsView">
         <div class="settings-container">
             <div class="settings-header">
-                <h2>환경설정</h2>
+                <h2 style="font-size: 1.5rem; font-weight: 800;">⚙️ 환경설정</h2>
                 <button class="btn-close-settings" onclick="app.toggleSettings(false)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
                     </svg>
                 </button>
             </div>
 
+            <!-- Tab Navigation -->
             <div class="settings-tabs">
-                <button class="settings-tab-btn active" onclick="app.switchSettingsTab('category')"
-                    id="tab-category">카테고리</button>
-                <button class="settings-tab-btn" onclick="app.switchSettingsTab('member')" id="tab-member">담당자</button>
-                <button class="settings-tab-btn" onclick="app.switchSettingsTab('data')" id="tab-data">데이터</button>
+                <button class="settings-tab-btn active" id="tab-category" onclick="app.switchSettingsTab('category')">분류
+                    관리</button>
+                <button class="settings-tab-btn" id="tab-member" onclick="app.switchSettingsTab('member')">멤버
+                    관리</button>
+                <button class="settings-tab-btn" id="tab-data" onclick="app.switchSettingsTab('data')">데이터 관리</button>
             </div>
 
-            <!-- Category Tab Content -->
+            <!-- Category Management -->
             <div id="settingsCategoryTab" class="settings-tab-content active">
                 <div class="settings-section">
                     <label class="input-label">카테고리 관리</label>
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
                         <input type="text" id="newFolderName" placeholder="새 카테고리 이름">
+                        <select id="parentFolderSelect">
+                            <option value="">부모 카테고리 없음 (상위)</option>
+                        </select>
+                        <div class="color-picker-container">
+                            <label class="input-label" style="font-size: 0.8rem;">색상 지정</label>
+                            <div class="color-palette" id="colorPalette">
+                                <!-- Colors will be injected here -->
+                            </div>
+                            <input type="hidden" id="selectedColor">
+                        </div>
                         <button class="btn-add" style="width: auto; white-space: nowrap;"
                             onclick="app.handleAddFolder()">추가</button>
                     </div>
-                    <div class="settings-item-list" id="settingsFolderList"></div>
+                    <div class="settings-item-list" id="settingsFolderList">
+                        <!-- Folders for settings item list -->
+                    </div>
                 </div>
             </div>
 
-            <!-- Member Tab Content -->
+            <!-- Member Management -->
             <div id="settingsMemberTab" class="settings-tab-content">
                 <div class="settings-section">
-                    <label class="input-label">담당자 관리</label>
+                    <label class="input-label">멤버 관리</label>
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                        <input type="text" id="newMemberName" placeholder="새 담당자 이름">
+                        <input type="text" id="newMemberName" placeholder="새 멤버 이름">
                         <button class="btn-add" style="width: auto; white-space: nowrap;"
                             onclick="app.handleAddMember()">추가</button>
                     </div>
-                    <div class="settings-item-list" id="settingsMemberList"></div>
+                    <div class="settings-item-list" id="settingsMemberList">
+                        <!-- Members for settings item list -->
+                    </div>
                 </div>
             </div>
 
-            <!-- Data Tab Content -->
+            <!-- Data Management -->
             <div id="settingsDataTab" class="settings-tab-content">
                 <div class="settings-section">
-                    <label class="input-label">데이터 관리 (기기 간 이동)</label>
+                    <label class="input-label">실시간 데이터 보존 (MongoDB)</label>
                     <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                        현재 데이터를 백업하거나 다른 기기에서 가져온 파일을 불러올 수 있습니다.
+                        현재 모든 데이터는 클라우드 DB(MongoDB Atlas)에 실시간으로 안전하게 저장되고 있습니다.
                     </p>
-                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                        <button class="btn-add" style="background: var(--primary-color);" onclick="app.exportData()">데이터
-                            백업하기 (JSON 내보내기)</button>
-                        <button class="btn-add" style="background: var(--secondary-color);"
-                            onclick="document.getElementById('importFile').click()">데이터 불러오기 (JSON 가져오기)</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <button class="btn-add" style="background-color: var(--secondary-color);"
+                            onclick="app.exportData()">데이터 내보내기 (.json)</button>
+                        <button class="btn-add" style="background-color: var(--text-muted);"
+                            onclick="document.getElementById('importFile').click()">데이터 가져오기</button>
+                        <input type="file" id="importFile" style="display: none;" onchange="app.importData(event)">
                     </div>
-                    <input type="file" id="importFile" style="display: none;" accept=".json"
-                        onchange="app.importData(event)">
                 </div>
             </div>
         </div>

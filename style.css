@@ -84,6 +84,19 @@ body {
     color: white;
 }
 
+/* Sub-folder Styles */
+.folder-item.depth-1 {
+    padding-left: 2rem;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.folder-item.depth-1 span::before {
+    content: "┕ ";
+    margin-right: 4px;
+    opacity: 0.5;
+}
+
 .sidebar-label {
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -706,4 +719,423 @@ textarea:focus {
 .subtask-text.completed {
     text-decoration: line-through;
     color: var(--text-muted);
+}
+
+/* Calendar View Styles */
+#calendar {
+    height: 100%;
+    font-family: 'Nunito', 'Outfit', sans-serif;
+}
+
+.fc {
+    --fc-border-color: var(--border-color);
+    --fc-daygrid-dot-event-marker-size: 8px;
+    --fc-event-border-color: transparent;
+    --fc-page-bg-color: var(--card-bg);
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+
+.fc .fc-button-primary {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-main);
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.fc .fc-button-primary:hover {
+    background-color: var(--background);
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.fc .fc-button-primary:disabled {
+    background-color: var(--background);
+    opacity: 0.5;
+}
+
+.fc .fc-button-active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+.fc th {
+    padding: 10px 0;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.fc-day-sun {
+    color: #ef4444;
+}
+
+.fc-day-sat {
+    color: #3b82f6;
+}
+
+.category-tag {
+    padding: 2px 8px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+/* Color Picker Styles */
+.color-picker-container {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 0.5rem;
+}
+
+.color-palette {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.color-swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.color-swatch.selected {
+    border-color: var(--text-main);
+    transform: scale(1.1);
+}
+
+/* Category Colors & Chart Section */
+/* Sidebar Color Dot */
+.folder-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+    display: inline-block;
+}
+
+/* Dashboard Enhanced Widgets */
+.dashboard-widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.widget-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.widget-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.widget-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+/* Urgent Summary List - Refined */
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.summary-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 0.75rem;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .summary-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.summary-item:hover {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
+.summary-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.summary-item-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.summary-item-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.dday-badge-small {
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.3rem 0.7rem;
+    border-radius: 0.5rem;
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+/* Progress Section - Refined */
+.progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.progress-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.progress-item-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.progress-item-percent {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.progress-bar-bg {
+    height: 10px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+[data-theme='dark'] .progress-bar-bg {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: width 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Priority Summary - Refined */
+.prio-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.prio-summary-item {
+    padding: 1.25rem 1rem;
+    border-radius: 0.75rem;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+[data-theme='dark'] .prio-summary-item {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.prio-summary-item:hover {
+    transform: scale(1.03);
+}
+
+.prio-summary-val {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+}
+
+.prio-summary-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.chart-section {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.chart-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.chart-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+
+    .chart-section,
+    .dashboard-widgets-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* FullCalendar Customizations */
+.fc-event {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+[data-theme="dark"] .fc-theme-standard td,
+[data-theme="dark"] .fc-theme-standard th,
+[data-theme="dark"] .fc-scrollgrid {
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .fc-daygrid-day-number {
+    color: var(--text-main);
+}
+
+/* Reordering Buttons */
+.reorder-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-right: 8px;
+    opacity: 0.3;
+    transition: opacity 0.2s ease;
+}
+
+.summary-item:hover .reorder-btns,
+.folder-item:hover .reorder-btns,
+.task-card:hover .reorder-btns,
+.settings-item:hover .reorder-btns {
+    opacity: 1;
+}
+
+.btn-reorder {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.btn-reorder:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--primary-color);
+}
+
+[data-theme='dark'] .btn-reorder:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-reorder i {
+    font-size: 0.75rem;
+}
+
+/* Specific button layout for different views */
+.task-card .reorder-btns {
+    margin-right: 12px;
+}
+
+.folder-item .reorder-btns {
+    margin-left: auto;
+    flex-direction: row;
+    opacity: 0;
+}
+
+.folder-item:hover .reorder-btns {
+    opacity: 0.6;
+}
+
+.settings-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
