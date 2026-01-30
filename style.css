@@ -1180,3 +1180,71 @@ textarea:focus {
 .folder-item[class*="depth-"] {
     position: relative;
 }
+
+/* Priority Badges (6 Levels) */
+.prio-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.prio-critical {
+    background-color: #ede9fe;
+    /* Violet-100 */
+    color: #7c3aed;
+    /* Violet-600 */
+    border: 1px solid #ddd6fe;
+}
+
+.prio-urgent {
+    background-color: #fee2e2;
+    /* Red-100 */
+    color: #ef4444;
+    /* Red-500 */
+    border: 1px solid #fecaca;
+}
+
+.prio-high {
+    background-color: #fef3c7;
+    /* Amber-100 */
+    color: #f59e0b;
+    /* Amber-500 */
+    border: 1px solid #fde68a;
+}
+
+.prio-normal {
+    background-color: #dbeafe;
+    /* Blue-100 */
+    color: #3b82f6;
+    /* Blue-500 */
+    border: 1px solid #bfdbfe;
+}
+
+.prio-low {
+    background-color: #f1f5f9;
+    /* Slate-100 */
+    color: #64748b;
+    /* Slate-500 */
+    border: 1px solid #e2e8f0;
+}
+
+.prio-lowest {
+    background-color: #f8fafc;
+    /* Slate-50 */
+    color: #94a3b8;
+    /* Slate-400 */
+    border: 1px solid #e2e8f0;
+}
+
+/* Dashboard Priority Grid Update */
+.prio-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* 2 rows x 3 columns for 6 items */
+    gap: 1rem;
+}
+
+.folder-item[class*="depth-"] {
+    position: relative;
+}
