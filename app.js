@@ -634,15 +634,23 @@ const app = {
         const list = document.getElementById('fileList');
         if (!list) return;
 
-        list.innerHTML = this.data.tempFiles.map((file, index) => `
+        list.innerHTML = this.data.tempFiles.map((file, index) => {
+            let thumbnailHtml = '';
+            if (this.isImageFile(file.name)) {
+                thumbnailHtml = `<img src="${file.url}" class="file-thumbnail" onclick="app.openImageViewer('${file.url}')">`;
+            }
+
+            return `
             <div class="file-item">
                 <div class="file-info">
-                    <span style="font-size: 1.2rem;">📎</span>
+                    ${thumbnailHtml}
+                    ${thumbnailHtml ? '' : '<span style="font-size: 1.2rem;">📎</span>'}
                     <a href="${file.url}" target="_blank" class="file-name" style="text-decoration:none; color:inherit;">${file.name}</a>
                 </div>
                 <button type="button" class="btn-remove-file" onclick="app.handleRemoveFile(${index})">&times;</button>
             </div>
-        `).join('');
+            `;
+        }).join('');
     },
 
     async handleAddTask() {
@@ -981,14 +989,22 @@ const app = {
 
             const attachmentsHtml = task.attachments && task.attachments.length > 0 ? `
                 <div class="file-list" style="margin-top: 0.5rem; gap: 0.25rem;">
-                    ${task.attachments.map(file => `
+                    ${task.attachments.map(file => {
+                let thumbnailHtml = '';
+                // Assuming file.path is the server path (e.g., uploads/filename)
+                if (this.isImageFile(file.name)) {
+                    thumbnailHtml = `<img src="${file.path}" class="file-thumbnail" style="width: 30px; height: 30px;" onclick="event.stopPropagation(); app.openImageViewer('${file.path}')">`;
+                }
+
+                return `
                         <div class="file-item" style="padding: 0.25rem 0.5rem; background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05);">
                             <div class="file-info">
+                                ${thumbnailHtml}
                                 <span style="font-size: 0.9rem;">📎</span>
-                                <a href="${file.url}" target="_blank" class="file-name" style="text-decoration:none; color:var(--text-main); font-size: 0.85rem;">${file.name}</a>
+                                <a href="${file.path}" target="_blank" class="file-name" style="text-decoration:none; color:var(--text-main); font-size: 0.85rem;" onclick="event.stopPropagation()">${file.name}</a>
                             </div>
                         </div>
-                    `).join('')}
+                    `}).join('')}
                 </div>
             ` : '';
 
@@ -1434,6 +1450,26 @@ const app = {
             this.updateFilterOptions();
         } else if (type === 'task') {
             this.renderTasks();
+        }
+    },
+
+    isImageFile(filename) {
+        return /\.(jpg|jpeg|png|gif|webp|bmp|svg)$/i.test(filename);
+    },
+
+    openImageViewer(src) {
+        const modal = document.getElementById("imageViewerModal");
+        const modalImg = document.getElementById("fullImage");
+        if (modal && modalImg) {
+            modal.style.display = "block";
+            modalImg.src = src;
+        }
+    },
+
+    closeImageViewer() {
+        const modal = document.getElementById("imageViewerModal");
+        if (modal) {
+            modal.style.display = "none";
         }
     },
 
