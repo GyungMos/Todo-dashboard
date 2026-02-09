@@ -1181,6 +1181,38 @@ textarea:focus {
     position: relative;
 }
 
+/* Task List Grid Layout (User Request) */
+.task-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* Mobile: 1 column */
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .task-list {
+        grid-template-columns: repeat(2, 1fr);
+        /* Tablet: 2 columns */
+    }
+}
+
+@media (min-width: 1200px) {
+    .task-list {
+        grid-template-columns: repeat(3, 1fr);
+        /* Desktop: 3 columns */
+    }
+}
+
+.task-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.task-desc {
+    flex-grow: 1;
+}
+
 /* Priority Badges (6 Levels) */
 .prio-badge {
     padding: 2px 8px;

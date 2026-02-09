@@ -672,12 +672,30 @@ const app = {
         const activeList = document.getElementById('activeTaskList');
         const completedList = document.getElementById('completedTaskList');
 
-        const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
+        // Smart Sorting: Priority > Due Date > Created Date
+        const priorityOrder = {
+            critical: 6, urgent: 5, high: 4,
+            normal: 3, low: 2, lowest: 1
+        };
+
         const displayedTasks = [...this.data.tasks].sort((a, b) => {
+            // 1. Completed tasks always at the bottom
             if (a.completed !== b.completed) return a.completed ? 1 : -1;
-            const pDiff = (priorityOrder[b.priority] || 2) - (priorityOrder[a.priority] || 2);
-            if (pDiff !== 0) return pDiff;
-            return new Date(a.endDate) - new Date(b.endDate);
+
+            // 2. Priority: Critical(6) -> Lowest(1)
+            const pA = priorityOrder[a.priority] || 3;
+            const pB = priorityOrder[b.priority] || 3;
+            if (pA !== pB) return pB - pA;
+
+            // 3. Due Date: Ascending (Imminent first)
+            const dateA = new Date(a.endDate);
+            const dateB = new Date(b.endDate);
+            if (dateA.getTime() !== dateB.getTime()) {
+                return dateA - dateB;
+            }
+
+            // 4. Created Date (ID): Descending (Newest first)
+            return b.id - a.id;
         });
 
         const searchQuery = document.getElementById('searchInput').value.toLowerCase();
