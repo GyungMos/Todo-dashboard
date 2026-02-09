@@ -48,6 +48,30 @@ const app = {
             e.preventDefault();
             this.handleAddTask();
         });
+
+        // Close sidebar on window resize if > 900px
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) {
+                this.toggleSidebar(false);
+            }
+        });
+    },
+
+    toggleSidebar(show) {
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+
+        if (show === undefined) {
+            // Toggle
+            const isActive = sidebar.classList.contains('active');
+            this.toggleSidebar(!isActive);
+        } else if (show) {
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+        } else {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        }
     },
 
     async loadData() {
@@ -350,7 +374,17 @@ const app = {
         const folderNameDisplay = folder === 'dashboard' ? 'DashBoard' :
             (folder === 'all' ? '전체 업무 목록' :
                 (folder === 'all_with_form' ? '업무 등록' : folder));
+
         document.getElementById('currentFolderName').textContent = folderNameDisplay;
+
+        // Update Mobile Header Title
+        const mobileTitle = document.getElementById('mobileHeaderTitle');
+        if (mobileTitle) mobileTitle.textContent = folderNameDisplay;
+
+        // Auto-close sidebar on mobile
+        if (window.innerWidth <= 900) {
+            this.toggleSidebar(false);
+        }
 
         const taskForm = document.getElementById('taskForm');
         const taskListView = document.getElementById('taskListView');

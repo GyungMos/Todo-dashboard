@@ -19,6 +19,24 @@
 </head>
 
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button class="mobile-menu-btn" onclick="app.toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <h2 style="font-size: 1.2rem; font-weight: 700; margin: 0;" id="mobileHeaderTitle">To Do List</h2>
+        <div class="theme-toggle" onclick="app.toggleTheme()" style="padding: 0.5rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5" />
+                <path
+                    d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+            </svg>
+        </div>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" onclick="app.toggleSidebar(false)"></div>
+
     <!-- Sidebar -->
     <aside class="sidebar">
         <h1>To Do List</h1>
