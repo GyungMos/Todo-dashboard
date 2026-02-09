@@ -672,7 +672,7 @@ const app = {
         const activeList = document.getElementById('activeTaskList');
         const completedList = document.getElementById('completedTaskList');
 
-        // Smart Sorting: Priority > Due Date > Created Date
+        // Smart Sorting: Due Date > Priority > Created Date
         const priorityOrder = {
             critical: 6, urgent: 5, high: 4,
             normal: 3, low: 2, lowest: 1
@@ -682,17 +682,18 @@ const app = {
             // 1. Completed tasks always at the bottom
             if (a.completed !== b.completed) return a.completed ? 1 : -1;
 
-            // 2. Priority: Critical(6) -> Lowest(1)
-            const pA = priorityOrder[a.priority] || 3;
-            const pB = priorityOrder[b.priority] || 3;
-            if (pA !== pB) return pB - pA;
-
-            // 3. Due Date: Ascending (Imminent first)
+            // 2. Due Date: Ascending (Imminent first)
             const dateA = new Date(a.endDate);
             const dateB = new Date(b.endDate);
+            // 날짜 유효성 체크를 추가하여 날짜가 없는 경우 뒤로 보낼 수 있음 (현재는 required라 가정)
             if (dateA.getTime() !== dateB.getTime()) {
                 return dateA - dateB;
             }
+
+            // 3. Priority: Critical(6) -> Lowest(1)
+            const pA = priorityOrder[a.priority] || 3;
+            const pB = priorityOrder[b.priority] || 3;
+            if (pA !== pB) return pB - pA;
 
             // 4. Created Date (ID): Descending (Newest first)
             return b.id - a.id;
