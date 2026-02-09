@@ -227,6 +227,23 @@
                     <label class="input-label">설명 및 메모</label>
                     <textarea id="notesInput" placeholder="업무에 대한 상세 설명을 입력하세요..." rows="3"></textarea>
                 </div>
+                <div class="input-group">
+                    <label class="input-label">첨부 파일</label>
+                    <div class="file-upload-container" id="dropZone">
+                        <input type="file" id="fileInput" multiple style="display: none;"
+                            onchange="app.handleFileUpload(this.files)">
+                        <div class="file-upload-placeholder" onclick="document.getElementById('fileInput').click()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            <span>클릭하여 파일 선택 또는 드래그 앤 드롭</span>
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+                </div>
 
                 <!-- Sub-task Section -->
                 <div class="input-group">

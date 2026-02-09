@@ -10,6 +10,7 @@ const app = {
         currentFolder: "all",
         selectedMembers: [],
         tempSubTasks: [], // For task creation/edit form
+        tempFiles: [], // For file attachments
         statFilter: "all", // Dashboard filter state
         collapsedFolders: [] // Folders that are currently collapsed
     },
@@ -547,6 +548,60 @@ const app = {
         `).join('');
     },
 
+    async handleFileUpload(files) {
+        if (!files || files.length === 0) return;
+
+        // Upload sequentially
+        for (let i = 0; i < files.length; i++) {
+            const formData = new FormData();
+            formData.append('file', files[i]);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    this.data.tempFiles.push({
+                        name: result.filename,
+                        url: result.url,
+                        size: result.size,
+                        type: files[i].type
+                    });
+                } else {
+                    console.error('File upload failed');
+                    alert('파일 업로드에 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                alert('파일 업로드 중 오류가 발생했습니다.');
+            }
+        }
+        this.renderFileList();
+    },
+
+    handleRemoveFile(index) {
+        this.data.tempFiles.splice(index, 1);
+        this.renderFileList();
+    },
+
+    renderFileList() {
+        const list = document.getElementById('fileList');
+        if (!list) return;
+
+        list.innerHTML = this.data.tempFiles.map((file, index) => `
+            <div class="file-item">
+                <div class="file-info">
+                    <span style="font-size: 1.2rem;">📎</span>
+                    <a href="${file.url}" target="_blank" class="file-name" style="text-decoration:none; color:inherit;">${file.name}</a>
+                </div>
+                <button type="button" class="btn-remove-file" onclick="app.handleRemoveFile(${index})">&times;</button>
+            </div>
+        `).join('');
+    },
+
     async handleAddTask() {
         const title = document.getElementById('titleInput').value;
         const folder = document.getElementById('folderSelect').value;
@@ -581,7 +636,8 @@ const app = {
                     title, folder, priority, startDate, endDate, leaveDays,
                     members: [...this.data.selectedMembers],
                     notes,
-                    subtasks: [...this.data.tempSubTasks]
+                    subtasks: [...this.data.tempSubTasks],
+                    attachments: [...this.data.tempFiles]
                 };
             }
             successMessage = "업무 수정이 완료되었습니다.";
@@ -593,6 +649,7 @@ const app = {
                 members: [...this.data.selectedMembers],
                 notes,
                 subtasks: [...this.data.tempSubTasks],
+                attachments: [...this.data.tempFiles],
                 completed: false,
                 createdAt: new Date().toISOString()
             };
@@ -623,8 +680,10 @@ const app = {
 
         this.data.selectedMembers = [...task.members];
         this.data.tempSubTasks = task.subtasks ? [...task.subtasks] : [];
+        this.data.tempFiles = task.attachments ? [...task.attachments] : [];
         this.renderMembers();
         this.renderSubTasksInForm();
+        this.renderFileList();
 
         document.getElementById('submitBtn').textContent = '업무 수정하기';
         document.getElementById('cancelEditBtn').style.display = 'block';
@@ -648,8 +707,10 @@ const app = {
         document.getElementById('cancelEditBtn').style.display = 'none';
         this.data.selectedMembers = [];
         this.data.tempSubTasks = [];
+        this.data.tempFiles = [];
         this.renderMembers();
         this.renderSubTasksInForm();
+        this.renderFileList();
     },
 
     async toggleSubTask(taskId, subIndex) {
@@ -832,6 +893,19 @@ const app = {
                 </div>
             ` : '';
 
+            const attachmentsHtml = task.attachments && task.attachments.length > 0 ? `
+                <div class="file-list" style="margin-top: 0.5rem; gap: 0.25rem;">
+                    ${task.attachments.map(file => `
+                        <div class="file-item" style="padding: 0.25rem 0.5rem; background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05);">
+                            <div class="file-info">
+                                <span style="font-size: 0.9rem;">📎</span>
+                                <a href="${file.url}" target="_blank" class="file-name" style="text-decoration:none; color:var(--text-main); font-size: 0.85rem;">${file.name}</a>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '';
+
             const globalIndex = this.data.tasks.findIndex(t => t.id === task.id);
 
             return `
@@ -849,6 +923,7 @@ const app = {
                             <span>👤 담당자: ${task.members.join(', ')}</span>
                         </div>
                         ${subTasksHtml}
+                        ${attachmentsHtml}
                         ${task.notes ? `<p class="task-desc">${task.notes}</p>` : ''}
                     </div>
                     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;">

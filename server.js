@@ -32,10 +32,46 @@ const DashboardSchema = new mongoose.Schema({
 
 const Dashboard = mongoose.model('Dashboard', DashboardSchema);
 
+const multer = require('multer');
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // Prevent file name collision
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + '-' + file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
+
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(__dirname));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve uploaded files
+
+// File Upload Route
+app.post('/api/upload', upload.single('file'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    // Return the accessible URL of the uploaded file
+    const fileUrl = `/uploads/${req.file.filename}`;
+    res.json({
+        url: fileUrl,
+        filename: req.file.originalname,
+        savedName: req.file.filename,
+        size: req.file.size
+    });
+});
 
 // API Routes
 app.get('/api/data', async (req, res) => {
