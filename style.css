@@ -112,7 +112,8 @@ body {
 .main-content {
     flex: 1;
     padding: 3rem;
-    max-width: 1000px;
+    max-width: 1600px;
+    /* Expanded from 1000px */
     margin: 0 auto;
 }
 
