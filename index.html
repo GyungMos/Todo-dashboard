@@ -308,68 +308,80 @@
                 </button>
             </div>
 
-            <!-- Tab Navigation -->
+            <!-- Tab Navigation (Segmented Control) -->
             <div class="settings-tabs">
-                <button class="settings-tab-btn active" id="tab-category" onclick="app.switchSettingsTab('category')">분류
-                    관리</button>
-                <button class="settings-tab-btn" id="tab-member" onclick="app.switchSettingsTab('member')">멤버
-                    관리</button>
-                <button class="settings-tab-btn" id="tab-data" onclick="app.switchSettingsTab('data')">데이터 관리</button>
+                <button class="settings-tab-btn active" id="tab-category"
+                    onclick="app.switchSettingsTab('category')">분류</button>
+                <button class="settings-tab-btn" id="tab-member" onclick="app.switchSettingsTab('member')">멤버</button>
+                <button class="settings-tab-btn" id="tab-data" onclick="app.switchSettingsTab('data')">데이터</button>
             </div>
 
-            <!-- Category Management -->
-            <div id="settingsCategoryTab" class="settings-tab-content active">
-                <div class="settings-section">
-                    <label class="input-label">카테고리 관리</label>
-                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
-                        <input type="text" id="newFolderName" placeholder="새 카테고리 이름">
-                        <select id="parentFolderSelect">
-                            <option value="">부모 카테고리 없음 (상위)</option>
-                        </select>
+            <div class="settings-content-body">
+                <!-- Category Management -->
+                <div id="settingsCategoryTab" class="settings-tab-content active">
+                    <div class="settings-section">
+                        <label class="settings-section-title">카테고리 관리</label>
+                        <div class="settings-input-group">
+                            <input type="text" id="newFolderName" placeholder="새 카테고리 이름">
+                            <button class="btn-add" style="width: auto; white-space: nowrap; padding: 0.6rem 1rem;"
+                                onclick="app.handleAddFolder()">추가</button>
+                        </div>
+                        <div class="settings-input-group">
+                            <select id="parentFolderSelect"
+                                style="flex: 1; padding: 0.6rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <option value="">부모 카테고리 없음 (상위)</option>
+                            </select>
+                        </div>
+
                         <div class="color-picker-container">
-                            <label class="input-label" style="font-size: 0.8rem;">색상 지정</label>
+                            <label class="settings-section-title"
+                                style="font-size: 0.85rem; margin-bottom: 0.5rem;">카테고리 색상</label>
                             <div class="color-palette" id="colorPalette">
                                 <!-- Colors will be injected here -->
                             </div>
                             <input type="hidden" id="selectedColor">
                         </div>
-                        <button class="btn-add" style="width: auto; white-space: nowrap;"
-                            onclick="app.handleAddFolder()">추가</button>
-                    </div>
-                    <div class="settings-item-list" id="settingsFolderList">
-                        <!-- Folders for settings item list -->
+
+                        <div class="settings-item-list" id="settingsFolderList" style="margin-top: 1.5rem;">
+                            <!-- Folders for settings item list -->
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Member Management -->
-            <div id="settingsMemberTab" class="settings-tab-content">
-                <div class="settings-section">
-                    <label class="input-label">멤버 관리</label>
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
-                        <input type="text" id="newMemberName" placeholder="새 멤버 이름">
-                        <button class="btn-add" style="width: auto; white-space: nowrap;"
-                            onclick="app.handleAddMember()">추가</button>
-                    </div>
-                    <div class="settings-item-list" id="settingsMemberList">
-                        <!-- Members for settings item list -->
+                <!-- Member Management -->
+                <div id="settingsMemberTab" class="settings-tab-content">
+                    <div class="settings-section">
+                        <label class="settings-section-title">멤버 관리</label>
+                        <div class="settings-input-group">
+                            <input type="text" id="newMemberName" placeholder="새 멤버 이름">
+                            <button class="btn-add" style="width: auto; white-space: nowrap; padding: 0.6rem 1rem;"
+                                onclick="app.handleAddMember()">추가</button>
+                        </div>
+                        <div class="settings-item-list" id="settingsMemberList">
+                            <!-- Members for settings item list -->
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Data Management -->
-            <div id="settingsDataTab" class="settings-tab-content">
-                <div class="settings-section">
-                    <label class="input-label">실시간 데이터 보존 (MongoDB)</label>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
-                        현재 모든 데이터는 클라우드 DB(MongoDB Atlas)에 실시간으로 안전하게 저장되고 있습니다.
-                    </p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <button class="btn-add" style="background-color: var(--secondary-color);"
-                            onclick="app.exportData()">데이터 내보내기 (.json)</button>
-                        <button class="btn-add" style="background-color: var(--text-muted);"
-                            onclick="document.getElementById('importFile').click()">데이터 가져오기</button>
-                        <input type="file" id="importFile" style="display: none;" onchange="app.importData(event)">
+                <!-- Data Management -->
+                <div id="settingsDataTab" class="settings-tab-content">
+                    <div class="settings-section">
+                        <label class="settings-section-title">데이터 관리 (MongoDB Atlas)</label>
+                        <p
+                            style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5;">
+                            현재 모든 데이터는 안전한 클라우드 데이터베이스에 실시간으로 동기화되고 있습니다.
+                        </p>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="btn-add" style="flex: 1; background-color: var(--secondary-color);"
+                                onclick="app.exportData()">
+                                <i class="fas fa-download" style="margin-right: 0.5rem;"></i> 백업 (.json)
+                            </button>
+                            <button class="btn-add" style="flex: 1; background-color: var(--text-muted);"
+                                onclick="document.getElementById('importFile').click()">
+                                <i class="fas fa-upload" style="margin-right: 0.5rem;"></i> 복원
+                            </button>
+                            <input type="file" id="importFile" style="display: none;" onchange="app.importData(this)">
+                        </div>
                     </div>
                 </div>
             </div>

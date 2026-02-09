@@ -213,21 +213,21 @@ const app = {
             settingsFolderList.innerHTML = sortedFolders.map(folder => {
                 const index = this.data.folders.findIndex(f => f.name === folder.name);
                 return `
-                    <div class="settings-item" style="padding-left: ${0.75 + (folder.depth * 1.5)}rem">
-                        <div style="display: flex; align-items: center; flex: 1;">
-                            <div class="folder-color-dot" style="background-color: ${folder.color || '#6366f1'}"></div>
-                            <span id="folder-name-${folder.name}">${folder.depth > 0 ? '┕ ' : ''} ${folder.name}</span>
+                    <div class="settings-item" style="padding-left: ${1 + (folder.depth * 1.2)}rem">
+                        <div style="display: flex; align-items: center; flex: 1; gap: 0.8rem;">
+                            <div class="folder-color-dot" style="background-color: ${folder.color || '#6366f1'}; width: 10px; height: 10px; box-shadow: 0 0 0 2px rgba(0,0,0,0.05);"></div>
+                            <span id="folder-name-${folder.name}" style="font-weight: 500; font-size: 0.95rem;">${folder.depth > 0 ? '' : ''} ${folder.name}</span>
                         </div>
-                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <div style="display: flex; gap: 0.4rem; align-items: center;">
                             <div class="reorder-btns" onclick="event.stopPropagation()">
-                                <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, -1)" title="위로">
-                                    <i class="fas fa-chevron-up"></i>
+                                <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, -1)" title="위로" style="padding: 4px;">
+                                    <i class="fas fa-chevron-up" style="font-size: 0.8rem;"></i>
                                 </button>
-                                <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, 1)" title="아래로">
-                                    <i class="fas fa-chevron-down"></i>
+                                <button class="btn-reorder" onclick="app.moveItem('folder', ${index}, 1)" title="아래로" style="padding: 4px;">
+                                    <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
                                 </button>
                             </div>
-                            <button class="btn-delete" style="color: var(--primary-color);" onclick="app.handleEditFolder('${folder.name}')">수정</button>
+                            <button class="btn-delete" style="color: var(--primary-color); background: rgba(79, 70, 229, 0.1);" onclick="app.handleEditFolder('${folder.name}')">수정</button>
                             <button class="btn-delete" onclick="app.handleDeleteFolder('${folder.name}')">삭제</button>
                         </div>
                     </div>
@@ -256,17 +256,22 @@ const app = {
         if (settingsMemberList) {
             settingsMemberList.innerHTML = this.data.members.map((member, index) => `
                 <div class="settings-item">
-                    <span style="flex: 1;">${member}</span>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; flex: 1;">
+                        <div style="width: 28px; height: 28px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700;">
+                            ${member.charAt(0)}
+                        </div>
+                        <span style="font-weight: 500;">${member}</span>
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
                         <div class="reorder-btns" onclick="event.stopPropagation()">
-                            <button class="btn-reorder" onclick="app.moveItem('member', ${index}, -1)" title="위로">
-                                <i class="fas fa-chevron-up"></i>
+                            <button class="btn-reorder" onclick="app.moveItem('member', ${index}, -1)" title="위로" style="padding: 4px;">
+                                <i class="fas fa-chevron-up" style="font-size: 0.8rem;"></i>
                             </button>
-                            <button class="btn-reorder" onclick="app.moveItem('member', ${index}, 1)" title="아래로">
-                                <i class="fas fa-chevron-down"></i>
+                            <button class="btn-reorder" onclick="app.moveItem('member', ${index}, 1)" title="아래로" style="padding: 4px;">
+                                <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
                             </button>
                         </div>
-                        <button class="btn-delete" style="color: var(--primary-color);" onclick="app.handleEditMember('${member}')">수정</button>
+                        <button class="btn-delete" style="color: var(--primary-color); background: rgba(79, 70, 229, 0.1);" onclick="app.handleEditMember('${member}')">수정</button>
                         <button class="btn-delete" onclick="app.handleDeleteMember('${member}')">삭제</button>
                     </div>
                 </div>
