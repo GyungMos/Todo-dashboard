@@ -1250,6 +1250,22 @@ textarea:focus {
     padding: 0.25rem;
 }
 
+
+/* SortableJS Visual Feedback */
+.sortable-ghost {
+    opacity: 0.4;
+    background-color: #f1f5f9;
+    border: 2px dashed var(--primary-color);
+}
+
+.sortable-drag {
+    cursor: grabbing;
+    opacity: 1;
+    background: var(--card-bg);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: scale(1.02);
+}
+
 /* Task List Grid Layout (User Request) */
 .task-list {
     display: grid;

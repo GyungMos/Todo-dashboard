@@ -12,7 +12,8 @@ const app = {
         tempSubTasks: [], // For task creation/edit form
         tempFiles: [], // For file attachments
         statFilter: "all", // Dashboard filter state
-        collapsedFolders: [] // Folders that are currently collapsed
+        collapsedFolders: [], // Folders that are currently collapsed
+        manualSort: false // Toggle for smart vs manual sorting
     },
     // 프리미엄 컬러 팔레트 (Professional & Soft)
     colors: [
@@ -23,8 +24,10 @@ const app = {
     calendar: null,
     charts: {
         weeklyTrend: null,
+        weeklyTrend: null,
         categoryDist: null
     },
+    sortables: [],
 
     async init() {
         await this.loadData();
@@ -733,40 +736,80 @@ const app = {
         const activeList = document.getElementById('activeTaskList');
         const completedList = document.getElementById('completedTaskList');
 
-        // Smart Sorting: Due Date > Priority > Created Date
-        const priorityOrder = {
-            critical: 6, urgent: 5, high: 4,
-            normal: 3, low: 2, lowest: 1
-        };
+        let displayedTasks = [...this.data.tasks];
 
-        const displayedTasks = [...this.data.tasks].sort((a, b) => {
-            // 1. Completed tasks always at the bottom
-            if (a.completed !== b.completed) return a.completed ? 1 : -1;
-
-            // 2. Due Date: Ascending (Imminent first)
-            const dateA = new Date(a.endDate);
-            const dateB = new Date(b.endDate);
-            // 날짜 유효성 체크를 추가하여 날짜가 없는 경우 뒤로 보낼 수 있음 (현재는 required라 가정)
-            if (dateA.getTime() !== dateB.getTime()) {
-                return dateA - dateB;
-            }
-
-            // 3. Priority: Critical(6) -> Lowest(1)
-            const pA = priorityOrder[a.priority] || 3;
-            const pB = priorityOrder[b.priority] || 3;
-            if (pA !== pB) return pB - pA;
-
-            // 4. Created Date (ID): Descending (Newest first)
-            return b.id - a.id;
-        });
+        // Filter Logic First
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
 
         const searchQuery = document.getElementById('searchInput').value.toLowerCase();
         const categoryFilter = document.getElementById('filterCategory').value;
         const assigneeFilter = document.getElementById('filterAssignee').value;
         const priorityFilter = document.getElementById('filterPriority').value;
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        displayedTasks = displayedTasks.filter(task => {
+            const matchesSidebar = this.data.currentFolder === 'all' ||
+                this.data.currentFolder === 'all_with_form' ||
+                task.folder === this.data.currentFolder;
+            if (!matchesSidebar) return false;
+
+            const matchesSearch = task.title.toLowerCase().includes(searchQuery) ||
+                (task.notes && task.notes.toLowerCase().includes(searchQuery));
+            if (!matchesSearch) return false;
+
+            if (categoryFilter !== 'all' && task.folder !== categoryFilter) return false;
+            if (assigneeFilter !== 'all' && !task.members.includes(assigneeFilter)) return false;
+            if (priorityFilter !== 'all' && (task.priority || 'normal') !== priorityFilter) return false;
+
+            if (this.data.statFilter === 'active') return !task.completed;
+            if (this.data.statFilter === 'completed') return task.completed;
+            if (this.data.statFilter === 'urgent') {
+                if (task.completed) return false;
+                const end = new Date(task.endDate);
+                const diff = (end - today) / (1000 * 60 * 60 * 24);
+                return diff <= 3 && diff >= 0;
+            }
+
+            return true;
+        });
+
+        // Sorting Logic
+        if (!this.data.manualSort) {
+            // Smart Sorting: Due Date > Priority > Created Date
+            const priorityOrder = {
+                critical: 6, urgent: 5, high: 4,
+                normal: 3, low: 2, lowest: 1
+            };
+
+            displayedTasks.sort((a, b) => {
+                // 1. Completed tasks always at the bottom
+                if (a.completed !== b.completed) return a.completed ? 1 : -1;
+
+                // 2. Due Date: Ascending (Imminent first)
+                const dateA = new Date(a.endDate);
+                const dateB = new Date(b.endDate);
+                if (dateA.getTime() !== dateB.getTime()) {
+                    return dateA - dateB;
+                }
+
+                // 3. Priority: Critical(6) -> Lowest(1)
+                const pA = priorityOrder[a.priority] || 3;
+                const pB = priorityOrder[b.priority] || 3;
+                if (pA !== pB) return pB - pA;
+
+                // 4. Created Date (ID): Descending (Newest first)
+                return b.id - a.id;
+            });
+        }
+
+        // Show/Hide Reset Sort Button
+        const sortBtnContainer = document.getElementById('sortControlArea');
+        if (sortBtnContainer) {
+            sortBtnContainer.innerHTML = this.data.manualSort ?
+                `<button class="btn-secondary" onclick="app.resetSmartSort()" style="padding: 0.5rem 1rem; font-size: 0.9rem;">🔄 스마트 정렬로 복귀</button>` :
+                ``;
+        }
+
 
         const statsBaseTasks = this.data.tasks.filter(task => {
             if (this.data.currentFolder === 'all' || this.data.currentFolder === 'all_with_form' || this.data.currentFolder === 'dashboard') return true;
@@ -828,6 +871,9 @@ const app = {
         }
 
         const filteredTasks = displayedTasks.filter(task => {
+            // This filter block is now redundant because displayedTasks is already filtered.
+            // However, to maintain the exact structure of the provided diff, I'll keep it.
+            // In a real scenario, this would be removed.
             const matchesSidebar = this.data.currentFolder === 'all' ||
                 this.data.currentFolder === 'all_with_form' ||
                 task.folder === this.data.currentFolder;
@@ -909,7 +955,7 @@ const app = {
             const globalIndex = this.data.tasks.findIndex(t => t.id === task.id);
 
             return `
-                <div class="task-card ${isAnnualLeave ? 'task-leave' : ''}">
+                <div class="task-card ${isAnnualLeave ? 'task-leave' : ''}" data-id="${task.id}">
                     <div class="task-info">
                         <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                             ${annualLeaveBadge}
@@ -963,6 +1009,104 @@ const app = {
 
         if (completedList) completedList.innerHTML = filteredTasks.filter(t => t.completed).map(createTaskHtml).join('') ||
             '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">완료된 업무가 아직 없습니다.</div>';
+
+        this.initSortable();
+    },
+
+    initSortable() {
+        // Destroy existing sortables to prevent memory leaks/duplicates
+        this.sortables.forEach(s => s.destroy());
+        this.sortables = [];
+
+        const activeList = document.getElementById('activeTaskList');
+        // Only enable sorting if not in a filtered state (to avoid confusion)
+        // However, user might want to sort regardless. Let's enable it but warn if needed.
+        // For simpler UX, we allow sorting but it might only affect the view if filters are active.
+        // Best to allow sorting only when showing "All" or a specific folder, without complex filters.
+        // For now, enable globally.
+
+        if (activeList) {
+            this.sortables.push(new Sortable(activeList, {
+                animation: 150,
+                handle: '.task-card', // Make the whole card draggable
+                delay: 100, // Small delay to prevent accidental drags on clicks
+                delayOnTouchOnly: true,
+                onEnd: (evt) => this.handleSortEnd(evt, false)
+            }));
+        }
+
+        const completedList = document.getElementById('completedTaskList');
+        if (completedList) {
+            this.sortables.push(new Sortable(completedList, {
+                animation: 150,
+                // handle: '.task-card', 
+                disabled: true // Disable sorting for completed tasks for now
+            }));
+        }
+    },
+
+    async handleSortEnd(evt, isCompleted) {
+        const itemEl = evt.item;
+        const newIndex = evt.newIndex;
+        const oldIndex = evt.oldIndex;
+
+        if (newIndex === oldIndex) return;
+
+        // Get the new order of IDs from the DOM
+        const container = evt.to;
+        const children = Array.from(container.children);
+        const newOrderIds = children.map(el => parseInt(el.getAttribute('data-id'))).filter(id => !isNaN(id));
+
+        // Reorder this.data.tasks based on the visual order
+        // We only reorder the visible tasks relative to each other, maintaining other tasks' positions?
+        // Or simpler: Move the single dragged item in the main array?
+        // Since we are viewing a filtered list, indices in DOM != indices in dataTasks.
+        // Complex.
+        // Simplest strategy for filtered view sorting:
+        // "Manual sorting is only fully supported when 'All Tasks' are viewed and no filters active."
+        // But that's restrictive.
+        // Alternative: We assign a float 'orderIndex' to every task.
+        // usage: prevItem.orderIndex + (nextItem.orderIndex - prevItem.orderIndex)/2.
+
+        // Let's force Manual Mode
+        this.data.manualSort = true;
+
+        // Naive reordering:
+        // We just re-construct the task list.
+        // Warning: This only works well if we are showing ALL tasks.
+        // If we are filtering, we can't easily know where to put the item in the global list relative to hidden items.
+        // Strategy: Just move the item in the global array to be after the item that is now above it.
+        const draggedId = parseInt(itemEl.getAttribute('data-id'));
+        const targetIndex = newIndex; // Index in the VISIBLE list
+
+        // Find ID of item before and after in the visual list
+        const prevId = targetIndex > 0 ? parseInt(children[targetIndex - 1].getAttribute('data-id')) : null;
+        const nextId = targetIndex < children.length - 1 ? parseInt(children[targetIndex + 1].getAttribute('data-id')) : null;
+
+        // Move `draggedId` in `this.data.tasks`
+        const fromGlobalIndex = this.data.tasks.findIndex(t => t.id === draggedId);
+        if (fromGlobalIndex === -1) return;
+        const [movedItem] = this.data.tasks.splice(fromGlobalIndex, 1);
+
+        if (prevId) {
+            const prevGlobalIndex = this.data.tasks.findIndex(t => t.id === prevId);
+            this.data.tasks.splice(prevGlobalIndex + 1, 0, movedItem);
+        } else if (nextId) {
+            const nextGlobalIndex = this.data.tasks.findIndex(t => t.id === nextId);
+            this.data.tasks.splice(nextGlobalIndex, 0, movedItem);
+        } else {
+            // Valid if list was empty or single item, but here we dragged so..
+            this.data.tasks.push(movedItem);
+        }
+
+        await this.saveData();
+        this.renderTasks(); // Re-render to update state/buttons
+    },
+
+    resetSmartSort() {
+        this.data.manualSort = false;
+        this.renderTasks();
+        this.saveData();
     },
 
     async toggleComplete(id) {
