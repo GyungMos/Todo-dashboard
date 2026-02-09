@@ -278,7 +278,17 @@
             </div>
 
             <div class="section">
-                <h3 class="section-title">✅ 완료된 업무</h3>
+                <div class="section-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 class="section-title" style="margin-bottom: 0;">✅ 완료된 업무</h3>
+                    <button class="btn-toggle-section" onclick="app.toggleCompletedSection()" id="btnToggleCompleted">
+                        <span id="toggleText">접기</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" id="toggleIcon">
+                            <path d="M18 15l-6-6-6 6" />
+                        </svg>
+                    </button>
+                </div>
                 <div class="task-list" id="completedTaskList">
                     <!-- Completed tasks will be injected here -->
                 </div>

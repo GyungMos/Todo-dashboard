@@ -1266,6 +1266,34 @@ textarea:focus {
     transform: scale(1.02);
 }
 
+/* Toggle Section Button */
+.btn-toggle-section {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    transition: all 0.2s;
+}
+
+.btn-toggle-section:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    color: var(--primary-color);
+}
+
+.btn-toggle-section svg {
+    transition: transform 0.3s;
+}
+
+.btn-toggle-section.collapsed svg {
+    transform: rotate(180deg);
+}
+
 /* Task List Grid Layout (User Request) */
 .task-list {
     display: grid;

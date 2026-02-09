@@ -13,7 +13,8 @@ const app = {
         tempFiles: [], // For file attachments
         statFilter: "all", // Dashboard filter state
         collapsedFolders: [], // Folders that are currently collapsed
-        manualSort: false // Toggle for smart vs manual sorting
+        manualSort: false, // Toggle for smart vs manual sorting
+        showCompleted: true // Toggle for showing/hiding completed tasks
     },
     // 프리미엄 컬러 팔레트 (Professional & Soft)
     colors: [
@@ -1010,6 +1011,7 @@ const app = {
         if (completedList) completedList.innerHTML = filteredTasks.filter(t => t.completed).map(createTaskHtml).join('') ||
             '<div style="text-align: center; color: var(--text-muted); padding: 2rem;">완료된 업무가 아직 없습니다.</div>';
 
+        this.renderCompletedSectionState(); // Apply initialization state
         this.initSortable();
     },
 
@@ -1439,6 +1441,29 @@ const app = {
             input.value = '';
         } else if (name) {
             alert("이미 존재하는 카테고리 이름입니다.");
+        }
+    },
+
+    toggleCompletedSection() {
+        this.data.showCompleted = !this.data.showCompleted;
+        this.renderCompletedSectionState();
+    },
+
+    renderCompletedSectionState() {
+        const list = document.getElementById('completedTaskList');
+        const btn = document.getElementById('btnToggleCompleted');
+        const text = document.getElementById('toggleText');
+
+        if (list && btn && text) {
+            if (this.data.showCompleted) {
+                list.style.display = 'grid'; // Grid layout
+                btn.classList.remove('collapsed');
+                text.textContent = '접기';
+            } else {
+                list.style.display = 'none';
+                btn.classList.add('collapsed');
+                text.textContent = '펼치기';
+            }
         }
     },
 
