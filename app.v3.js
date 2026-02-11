@@ -1,32 +1,3 @@
-// Global Error Handler & On-Screen Logger
-function logToScreen(msg, type = 'log') {
-    const debugDiv = document.getElementById('debugLog');
-    if (debugDiv) {
-        const line = document.createElement('div');
-        line.style.color = type === 'error' ? 'red' : 'lime';
-        line.textContent = `[${new Date().toISOString().split('T')[1].split('.')[0]}] ${msg}`;
-        debugDiv.appendChild(line);
-        debugDiv.scrollTop = debugDiv.scrollHeight;
-    }
-}
-
-const originalLog = console.log;
-const originalError = console.error;
-
-console.log = function (...args) {
-    originalLog.apply(console, args);
-    logToScreen(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
-};
-
-console.error = function (...args) {
-    originalError.apply(console, args);
-    logToScreen(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '), 'error');
-};
-
-window.onerror = function (msg, url, line, col, error) {
-    console.error(`Global Error: ${msg} at line ${line}`);
-    return false;
-};
 
 const app = {
     data: {
@@ -64,10 +35,9 @@ const app = {
     sortables: [],
 
     async init() {
-        console.log("🚀 App Init v3.1 - Fix Applied (ActiveFolderItem)");
+        console.log("🚀 App Init v3.2 - Final Clean");
         try {
             await this.loadData();
-            console.log("Data loaded", this.data);
             this.renderFolders();
             this.renderMembers();
             this.renderTasks();
@@ -75,7 +45,9 @@ const app = {
             this.updateFilterOptions();
             this.initCharts();
             this.setupEventListeners();
-            this.selectFolder('dashboard'); // 대시보드를 기본 화면으로 설정
+
+            // Force Dashboard on Init (Override saved state)
+            this.selectFolder('dashboard');
             console.log("Application Initialized Successfully");
         } catch (e) {
             console.error("CRITICAL INIT ERROR:", e);
