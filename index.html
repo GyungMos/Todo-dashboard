@@ -123,8 +123,19 @@
             <!-- Today Mode Content -->
             <div id="dailyTodayContent">
                 <div class="daily-date-header">
-                    <h2 id="dailyDateTitle">2월 11일 화요일</h2>
-                    <span class="daily-cheer">오늘도 화이팅! 🔥</span>
+                    <div>
+                        <h2 id="dailyDateTitle">2월 11일 화요일</h2>
+                        <span class="daily-cheer">오늘도 화이팅! 🔥</span>
+                    </div>
+                    <div class="daily-progress-container">
+                        <svg class="progress-ring" width="60" height="60">
+                            <circle class="progress-ring__circle-bg" stroke="currentColor" stroke-width="4"
+                                fill="transparent" r="26" cx="30" cy="30" />
+                            <circle class="progress-ring__circle" stroke="currentColor" stroke-width="4"
+                                fill="transparent" r="26" cx="30" cy="30" />
+                        </svg>
+                        <span class="progress-text">0%</span>
+                    </div>
                 </div>
 
                 <div class="daily-input-container">
@@ -136,8 +147,19 @@
                                 onkeypress="if(event.key === 'Enter') document.getElementById('dailySubtaskInput').focus()">
                         </div>
 
-                        <!-- Row 2: Priority & Subtasks -->
+                        <!-- Row 2: Category, Priority & Subtasks -->
                         <div class="daily-form-row split">
+                            <div class="daily-form-group category-group" style="flex: 0 0 140px;">
+                                <label>카테고리</label>
+                                <select id="dailyCategorySelect" class="daily-priority-select">
+                                    <option value="업무">🏢 업무</option>
+                                    <option value="개인">🏠 개인</option>
+                                    <option value="건강">💪 건강</option>
+                                    <option value="공부">📚 공부</option>
+                                    <option value="기타">ETC</option>
+                                </select>
+                            </div>
+
                             <div class="daily-form-group priority-group">
                                 <label>중요도</label>
                                 <div class="priority-selector-wrapper">
@@ -528,6 +550,16 @@
                 <div class="form-group">
                     <label>제목</label>
                     <input type="text" id="editTaskTitle" placeholder="할 일을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label>카테고리</label>
+                    <select id="editTaskCategory">
+                        <option value="업무">🏢 업무</option>
+                        <option value="개인">🏠 개인</option>
+                        <option value="건강">💪 건강</option>
+                        <option value="공부">📚 공부</option>
+                        <option value="기타">ETC</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label>중요도</label>

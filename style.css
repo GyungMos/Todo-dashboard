@@ -1352,40 +1352,52 @@ textarea:focus {
 /* ========================================= */
 
 /* Daily Task Form Styles */
+/* Daily Task Form Styles - Compact & Sophisticated */
 .daily-form-wrapper {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    margin-bottom: 2rem;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    margin-bottom: 3rem;
     transition: all 0.3s ease;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .daily-form-wrapper:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
 }
 
 .daily-form-row {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
 }
 
 .daily-title-input {
     width: 100%;
-    padding: 1rem 1.2rem;
-    font-size: 1.1rem;
-    font-weight: 600;
-    border: 1px solid var(--border-color);
-    border-radius: 0.8rem;
-    background: var(--input-bg);
+    padding: 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: none;
+    border-bottom: 2px solid var(--border-color);
+    border-radius: 0;
+    background: transparent;
     color: var(--text-main);
-    transition: all 0.2s;
+    transition: all 0.3s;
+}
+
+.daily-title-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
 }
 
 .daily-title-input:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    border-bottom-color: var(--primary-color);
+    box-shadow: none;
 }
 
 .daily-form-row.split {
@@ -2744,3 +2756,175 @@ textarea:focus {
     display: flex;
     align-items: center;
 }
+/* Compact Mode Overrides */
+.daily-priority-select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid transparent;
+    border-radius: 0.6rem;
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.daily-priority-select:hover,
+.daily-priority-select:focus {
+    background: rgba(0, 0, 0, 0.05);
+    outline: none;
+}
+
+.daily-subtask-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 0.6rem;
+    padding: 0.3rem;
+    transition: all 0.2s;
+}
+
+.daily-subtask-input-wrapper:focus-within {
+    background: white;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.daily-subtask-input-wrapper input {
+    flex: 1;
+    padding: 0.5rem 0.8rem;
+    border: none;
+    background: transparent;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.daily-subtask-input-wrapper input:focus {
+    outline: none;
+    box-shadow: none !important;
+}
+
+.btn-icon-add {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: white;
+    color: var(--primary-color);
+    border-radius: 0.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.btn-icon-add:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+}
+
+
+/* Daily Progress Ring */
+.daily-date-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.daily-progress-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-ring__circle-bg {
+    stroke: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .progress-ring__circle-bg {
+    stroke: rgba(255, 255, 255, 0.1);
+}
+
+.progress-ring__circle {
+    stroke: var(--primary-color);
+    stroke-dasharray: 163; /* 2 * PI * 26 */
+    stroke-dashoffset: 163;
+    transition: stroke-dashoffset 0.5s ease-in-out;
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    stroke-linecap: round;
+}
+
+.progress-text {
+    position: absolute;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Category Tag Styles */
+.category-tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary-color);
+}
+
+/* Dark Mode Polish */
+[data-theme='dark'] .daily-form-wrapper {
+    background: #1e293b; /* Darker card bg */
+    border-color: #334155;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .daily-title-input {
+    color: #f1f5f9;
+    background: transparent;
+}
+
+[data-theme='dark'] .daily-title-input::placeholder {
+    color: #64748b;
+}
+
+[data-theme='dark'] .daily-priority-select,
+[data-theme='dark'] .daily-subtask-input-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    color: #f1f5f9;
+}
+
+[data-theme='dark'] .daily-priority-select option {
+    background: #1e293b;
+    color: #f1f5f9;
+}
+
+[data-theme='dark'] #editTaskModal .modal-content {
+    background: #1e293b;
+}
+
+[data-theme='dark'] #editTaskModal .modal-header {
+    background: #0f172a;
+    border-bottom-color: #334155;
+}
+
+[data-theme='dark'] .btn-close-modal {
+    background: #334155;
+    border-color: #475569;
+    color: #cbd5e1;
+}
+
+[data-theme='dark'] .btn-close-modal:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+

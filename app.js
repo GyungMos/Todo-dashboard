@@ -549,6 +549,7 @@ const app = {
     addDailyTask() {
         const titleInput = document.getElementById('dailyTaskTitle');
         const prioritySelect = document.getElementById('dailyPrioritySelect');
+        const categorySelect = document.getElementById('dailyCategorySelect');
         const title = titleInput.value.trim();
 
         if (!title) {
@@ -567,6 +568,7 @@ const app = {
             date: this.getTodayString(),
             title: title,
             priority: prioritySelect.value,
+            category: categorySelect ? categorySelect.value : '기타',
             completed: false,
             createdAt: new Date().toISOString(),
             checklist: [...this.tempDailySubtasks] // Copy temp subtasks
@@ -612,6 +614,8 @@ const app = {
 
         document.getElementById('editTaskTitle').value = task.title;
         document.getElementById('editTaskPriority').value = task.priority;
+        const editCategorySelect = document.getElementById('editTaskCategory');
+        if (editCategorySelect) editCategorySelect.value = task.category || '기타';
         this.renderEditSubtaskList();
 
         const modal = document.getElementById('editTaskModal');
@@ -683,6 +687,8 @@ const app = {
         if (task) {
             task.title = title;
             task.priority = prioritySelect.value;
+            const editCategorySelect = document.getElementById('editTaskCategory');
+            if (editCategorySelect) task.category = editCategorySelect.value;
             task.checklist = [...this.tempEditSubtasks];
 
             this.saveData();
@@ -776,6 +782,7 @@ const app = {
                         </div>
                         <div class="daily-task-content">
                             <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="category-tag">${task.category || '기타'}</span>
                                 <span class="daily-task-title">${task.title}</span>
                                 <span class="daily-prio-badge ${prioClass}">${prioText}</span>
                                 ${task.date !== this.getTodayString() && !task.completed ? '<span class="daily-cheer" style="font-size:0.8rem; margin-left:0.5rem;">(이월됨)</span>' : ''}
@@ -799,6 +806,12 @@ const app = {
             const activeTasks = tasksToShow.filter(t => !t.completed);
             const completedTasks = tasksToShow.filter(t => t.completed);
 
+            // Progress Ring Update
+            const total = tasksToShow.length;
+            const completedCount = completedTasks.length;
+            const percent = total === 0 ? 0 : Math.round((completedCount / total) * 100);
+            this.updateProgressRing(percent);
+
             activeList.innerHTML = activeTasks.length ? activeTasks.map(generateItemHtml).join('') :
                 `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">할 일이 없습니다. 여유로운 하루 되세요! ☕</div>`;
 
@@ -812,6 +825,21 @@ const app = {
             activeList.innerHTML = tasksToShow.length ? tasksToShow.map(generateItemHtml).join('') :
                 `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">기록이 없습니다.</div>`;
         }
+    },
+
+    updateProgressRing(percent) {
+        const circle = document.querySelector('.progress-ring__circle');
+        const text = document.querySelector('.progress-text');
+        if (!circle || !text) return;
+
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+
+        const offset = circumference - (percent / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
+        text.textContent = `${percent}%`;
     },
 
     initCalendar() {
