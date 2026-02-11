@@ -8,6 +8,49 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- FullCalendar -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+    <!-- Edit Task Modal -->
+    <div id="editTaskModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>✏️ 할 일 수정</h3>
+                <button class="btn-close-modal" onclick="app.closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>제목</label>
+                    <input type="text" id="editTaskTitle" placeholder="할 일을 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label>중요도</label>
+                    <select id="editTaskPriority">
+                        <option value="urgent">🔥 긴급</option>
+                        <option value="high">⚡ 중요</option>
+                        <option value="normal">⚖️ 보통</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>세부 체크리스트</label>
+                    <div class="subtask-input-wrapper">
+                        <input type="text" id="editSubtaskInput" placeholder="하위 항목 추가..."
+                            onkeypress="if(event.key === 'Enter') app.addEditSubtask()">
+                        <button class="btn-add-subtask" onclick="app.addEditSubtask()">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="editSubtaskList" class="subtask-list">
+                        <!-- Subtasks will be rendered here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="app.closeEditModal()">취소</button>
+                <button class="btn-save" onclick="app.updateDailyTask()">저장하기</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- SortableJS -->

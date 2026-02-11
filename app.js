@@ -552,7 +552,13 @@ const app = {
         const title = titleInput.value.trim();
 
         if (!title) {
-            alert('할 일을 입력해주세요.');
+            titleInput.classList.add('input-error');
+            titleInput.placeholder = '할 일을 입력해주세요!';
+            titleInput.focus();
+            setTimeout(() => {
+                titleInput.classList.remove('input-error');
+                titleInput.placeholder = '오늘 할 일 제목을 입력하세요...';
+            }, 1500);
             return;
         }
 
@@ -577,6 +583,8 @@ const app = {
         this.renderDailyTasks();
     },
 
+    // ... (Edit Methods are here)
+
     toggleDailyTask(id) {
         const task = this.data.dailyTasks.find(t => t.id === id);
         if (task) {
@@ -588,6 +596,90 @@ const app = {
             }
             this.saveData();
             this.renderDailyTasks();
+        }
+    },
+
+    // Daily Task Edit Methods
+    currentEditTaskId: null,
+    tempEditSubtasks: [],
+
+    openEditModal(id) {
+        const task = this.data.dailyTasks.find(t => t.id === id);
+        if (!task) return;
+
+        this.currentEditTaskId = id;
+        this.tempEditSubtasks = task.checklist ? JSON.parse(JSON.stringify(task.checklist)) : [];
+
+        document.getElementById('editTaskTitle').value = task.title;
+        document.getElementById('editTaskPriority').value = task.priority;
+        this.renderEditSubtaskList();
+
+        document.getElementById('editTaskModal').style.display = 'flex';
+    },
+
+    closeEditModal() {
+        document.getElementById('editTaskModal').style.display = 'none';
+        this.currentEditTaskId = null;
+        this.tempEditSubtasks = [];
+    },
+
+    renderEditSubtaskList() {
+        const container = document.getElementById('editSubtaskList');
+        if (!container) return;
+
+        container.innerHTML = this.tempEditSubtasks.map(sub => `
+            <div class="preview-item">
+                <span>- ${sub.text}</span>
+                <button class="btn-remove-preview" onclick="app.removeEditSubtask(${sub.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
+    },
+
+    addEditSubtask() {
+        const input = document.getElementById('editSubtaskInput');
+        const text = input.value.trim();
+        if (!text) return;
+
+        this.tempEditSubtasks.push({
+            id: Date.now(),
+            text: text,
+            completed: false
+        });
+
+        input.value = '';
+        input.focus();
+        this.renderEditSubtaskList();
+    },
+
+    removeEditSubtask(id) {
+        this.tempEditSubtasks = this.tempEditSubtasks.filter(t => t.id !== id);
+        this.renderEditSubtaskList();
+    },
+
+    updateDailyTask() {
+        if (!this.currentEditTaskId) return;
+
+        const titleInput = document.getElementById('editTaskTitle');
+        const prioritySelect = document.getElementById('editTaskPriority');
+        const title = titleInput.value.trim();
+
+        if (!title) {
+            alert('수정할 제목을 입력해주세요.');
+            titleInput.focus();
+            return;
+        }
+
+        const task = this.data.dailyTasks.find(t => t.id === this.currentEditTaskId);
+        if (task) {
+            task.title = title;
+            task.priority = prioritySelect.value;
+            task.checklist = [...this.tempEditSubtasks];
+
+            this.saveData();
+            this.renderDailyTasks();
+            this.closeEditModal();
         }
     },
 
@@ -609,6 +701,7 @@ const app = {
         this.saveData();
         this.renderDailyTasks();
     },
+
 
     renderDailyTasks() {
         const isTodayMode = this.data.dailyMode === 'today';
@@ -681,9 +774,14 @@ const app = {
                             </div>
                             ${checklistHtml}
                         </div>
-                        <button class="btn-delete-daily" onclick="app.deleteDailyTask(${task.id})">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        <div class="daily-actions">
+                            <button class="btn-edit-daily" onclick="app.openEditModal(${task.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-delete-daily" onclick="app.deleteDailyTask(${task.id})">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
