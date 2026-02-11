@@ -27,7 +27,9 @@ const DashboardSchema = new mongoose.Schema({
     tasks: Array,
     folders: Array,
     members: Array,
-    currentFolder: String
+    currentFolder: String,
+    collapsedFolders: Array,
+    dailyTasks: Array // 오늘 할 일 데이터
 }, { timestamps: true });
 
 const Dashboard = mongoose.model('Dashboard', DashboardSchema);

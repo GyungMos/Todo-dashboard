@@ -44,6 +44,9 @@
         <div class="folder-item" id="dashboardMenu" onclick="app.selectFolder('dashboard')">
             <span>📊 DashBoard</span>
         </div>
+        <div class="folder-item" id="dailyMenu" onclick="app.selectFolder('daily')">
+            <span><i class="fas fa-sun" style="color: #f59e0b;"></i> 오늘 할 일</span>
+        </div>
         <div class="folder-item" id="allTasksMenu" onclick="app.selectFolder('all')">
             <span>🏠 전체 업무 목록</span>
         </div>
@@ -90,6 +93,59 @@
                 </div>
             </div>
         </header>
+
+        <!-- Daily View -->
+        <div id="dailyView" style="display: none;">
+            <div class="daily-header-tabs">
+                <button class="daily-tab-btn active" id="tab-today" onclick="app.switchDailyMode('today')">
+                    <i class="fas fa-sun"></i> 오늘 할 일
+                </button>
+                <button class="daily-tab-btn" id="tab-history" onclick="app.switchDailyMode('history')">
+                    <i class="fas fa-history"></i> 지난 기록
+                </button>
+            </div>
+
+            <!-- Today Mode Content -->
+            <div id="dailyTodayContent">
+                <div class="daily-date-header">
+                    <h2 id="dailyDateTitle">2월 11일 화요일</h2>
+                    <span class="daily-cheer">오늘도 화이팅! 🔥</span>
+                </div>
+
+                <div class="daily-input-container">
+                    <div class="daily-input-row">
+                        <input type="text" id="dailyTaskInput" placeholder="오늘 할 일을 입력하세요..."
+                            onkeypress="if(event.key === 'Enter') app.addDailyTask()">
+                        <select id="dailyPrioritySelect">
+                            <option value="normal">보통</option>
+                            <option value="high">중요</option>
+                            <option value="urgent">긴급</option>
+                        </select>
+                        <button class="btn-primary" onclick="app.addDailyTask()">추가</button>
+                    </div>
+                </div>
+
+                <div class="daily-task-list" id="dailyTaskList">
+                    <!-- Tasks will be rendered here -->
+                </div>
+
+                <div class="daily-task-list completed" id="dailyCompletedList">
+                    <h4 style="margin: 2rem 0 1rem; color: var(--text-muted); font-size: 0.9rem;">완료된 일</h4>
+                    <!-- Completed Tasks -->
+                </div>
+            </div>
+
+            <!-- History Mode Content -->
+            <div id="dailyHistoryContent" style="display: none;">
+                <div class="daily-history-controls">
+                    <label for="historyDateInput">날짜 선택: </label>
+                    <input type="date" id="historyDateInput" onchange="app.loadDailyHistory()">
+                </div>
+                <div class="daily-task-list" id="dailyHistoryList">
+                    <!-- History tasks -->
+                </div>
+            </div>
+        </div>
 
         <!-- Calendar View -->
         <div id="calendarView"

@@ -14,7 +14,10 @@ const app = {
         statFilter: "all", // Dashboard filter state
         collapsedFolders: [], // Folders that are currently collapsed
         manualSort: false, // Toggle for smart vs manual sorting
-        showCompleted: true // Toggle for showing/hiding completed tasks
+        showCompleted: true, // Toggle for showing/hiding completed tasks
+        dailyTasks: [], // Today's To-Do Data
+        dailyMode: 'today', // 'today' or 'history'
+        historyDate: new Date().toISOString().split('T')[0] // Default to today
     },
     // 프리미엄 컬러 팔레트 (Professional & Soft)
     colors: [
@@ -104,6 +107,7 @@ const app = {
             this.data.members = data.members || ["강민구", "김철수", "이영희", "박지민", "최유진"];
             this.data.currentFolder = data.currentFolder || "all";
             this.data.collapsedFolders = data.collapsedFolders || [];
+            this.data.dailyTasks = data.dailyTasks || [];
         } catch (error) {
             console.error('Failed to load data:', error);
             // Fallback to localStorage if server is not available
@@ -133,7 +137,8 @@ const app = {
                     folders: this.data.folders,
                     members: this.data.members,
                     currentFolder: this.data.currentFolder,
-                    collapsedFolders: this.data.collapsedFolders
+                    collapsedFolders: this.data.collapsedFolders,
+                    dailyTasks: this.data.dailyTasks
                 })
             });
         } catch (error) {
@@ -142,7 +147,8 @@ const app = {
             localStorage.setItem('pyungwoo_task_data', JSON.stringify({
                 tasks: this.data.tasks,
                 folders: this.data.folders,
-                members: this.data.members
+                members: this.data.members,
+                dailyTasks: this.data.dailyTasks
             }));
         }
     },
@@ -433,6 +439,186 @@ const app = {
         this.updateSidebarUI();
     },
 
+    // Daily Task Methods
+    getTodayString() {
+        // Returns YYYY-MM-DD in local time
+        const now = new Date();
+        const offset = now.getTimezoneOffset() * 60000;
+        return new Date(now - offset).toISOString().split('T')[0];
+    },
+
+    switchDailyMode(mode) {
+        this.data.dailyMode = mode;
+
+        document.querySelectorAll('.daily-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`tab-${mode}`).classList.add('active');
+
+        const todayContent = document.getElementById('dailyTodayContent');
+        const historyContent = document.getElementById('dailyHistoryContent');
+
+        if (mode === 'today') {
+            todayContent.style.display = 'block';
+            historyContent.style.display = 'none';
+        } else {
+            todayContent.style.display = 'none';
+            historyContent.style.display = 'block';
+            // Set default history date to today if not set
+            if (!document.getElementById('historyDateInput').value) {
+                document.getElementById('historyDateInput').value = this.getTodayString();
+                this.data.historyDate = this.getTodayString();
+            }
+        }
+
+        this.renderDailyTasks();
+    },
+
+    loadDailyHistory() {
+        const dateInput = document.getElementById('historyDateInput');
+        this.data.historyDate = dateInput.value;
+        this.renderDailyTasks();
+    },
+
+    addDailyTask() {
+        const input = document.getElementById('dailyTaskInput');
+        const prioritySelect = document.getElementById('dailyPrioritySelect');
+        const title = input.value.trim();
+
+        if (!title) return;
+
+        const newTask = {
+            id: Date.now(),
+            date: this.getTodayString(),
+            title: title,
+            priority: prioritySelect.value,
+            completed: false,
+            createdAt: new Date().toISOString()
+        };
+
+        this.data.dailyTasks.unshift(newTask);
+        input.value = '';
+        this.saveData();
+        this.renderDailyTasks();
+    },
+
+    toggleDailyTask(id) {
+        const task = this.data.dailyTasks.find(t => t.id === id);
+        if (task) {
+            task.completed = !task.completed;
+            if (task.completed) {
+                task.completedAt = new Date().toISOString();
+                // If in history mode and we toggle a past incomplete task (which is now done), 
+                // it stays on that date.
+                // If in today mode, it just marks related to today.
+            } else {
+                delete task.completedAt;
+            }
+            this.saveData();
+            this.renderDailyTasks();
+        }
+    },
+
+    deleteDailyTask(id) {
+        if (!confirm('정말 삭제하시겠습니까?')) return;
+        this.data.dailyTasks = this.data.dailyTasks.filter(t => t.id !== id);
+        this.saveData();
+        this.renderDailyTasks();
+    },
+
+    renderDailyTasks() {
+        const isTodayMode = this.data.dailyMode === 'today';
+        const targetDate = isTodayMode ? this.getTodayString() : this.data.historyDate;
+
+        // Update Date Header for Today Mode
+        if (isTodayMode) {
+            const now = new Date();
+            const options = { month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('dailyDateTitle').textContent = now.toLocaleDateString('ko-KR', options);
+        }
+
+        let tasksToShow = [];
+
+        if (isTodayMode) {
+            // Today logic:
+            // 1. Tasks created today
+            // 2. Tasks created in the past BUT NOT completed (Rollover)
+            // 3. Tasks completed today (even if created in past)
+            tasksToShow = this.data.dailyTasks.filter(t => {
+                const isCreatedToday = t.date === targetDate;
+                const isPastUncompleted = t.date < targetDate && !t.completed;
+                const isCompletedToday = t.completed && t.completedAt && t.completedAt.startsWith(targetDate);
+
+                return isCreatedToday || isPastUncompleted || isCompletedToday;
+            });
+        } else {
+            // History logic:
+            // Show tasks that match the target date.
+            // For past dates, usually we want to see what was done that day.
+            // Or tasks that were 'scheduled' for that day.
+            // Given the rollover logic, a task 'belongs' to the day it was completed, or the day it was created if not completed.
+            // Simply showing tasks with t.date === targetDate might miss rollover tasks completed on that day.
+
+            // Revised History Logic:
+            // Show tasks where (date == targetDate) OR (completedAt startsWith targetDate)
+            tasksToShow = this.data.dailyTasks.filter(t => {
+                const isCreatedOnDate = t.date === targetDate;
+                const isCompletedOnDate = t.completed && t.completedAt && t.completedAt.startsWith(targetDate);
+                return isCreatedOnDate || isCompletedOnDate;
+            });
+        }
+
+        // Sort: Uncompleted first, then by priority
+        const priorityOrder = { urgent: 3, high: 2, normal: 1 };
+        tasksToShow.sort((a, b) => {
+            if (a.completed !== b.completed) return a.completed ? 1 : -1;
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+        });
+
+        const activeList = isTodayMode ? document.getElementById('dailyTaskList') : document.getElementById('dailyHistoryList');
+        const completedList = isTodayMode ? document.getElementById('dailyCompletedList') : null; // History mode uses single list
+
+        if (completedList) completedList.innerHTML = '';
+
+        const generateItemHtml = (task) => {
+            const prioClass = `daily-prio-${task.priority}`;
+            const prioText = { urgent: '긴급', high: '중요', normal: '보통' }[task.priority];
+
+            return `
+                <div class="daily-task-item ${task.completed ? 'completed' : ''}">
+                    <div class="daily-checkbox" onclick="app.toggleDailyTask(${task.id})">
+                        ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+                    </div>
+                    <div class="daily-task-content">
+                        <span class="daily-task-title">${task.title}</span>
+                        <span class="daily-prio-badge ${prioClass}">${prioText}</span>
+                        ${task.date !== this.getTodayString() && !task.completed ? '<span class="daily-cheer" style="font-size:0.8rem; margin-left:0.5rem;">(이월됨)</span>' : ''}
+                    </div>
+                    <button class="btn-delete-daily" onclick="app.deleteDailyTask(${task.id})">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+        };
+
+        if (isTodayMode) {
+            const activeTasks = tasksToShow.filter(t => !t.completed);
+            const completedTasks = tasksToShow.filter(t => t.completed);
+
+            activeList.innerHTML = activeTasks.length ? activeTasks.map(generateItemHtml).join('') :
+                `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">할 일이 없습니다. 여유로운 하루 되세요! ☕</div>`;
+
+            completedList.innerHTML = `
+                <h4 style="margin: 2rem 0 1rem; color: var(--text-muted); font-size: 0.9rem;">완료된 일 (${completedTasks.length})</h4>
+                ${completedTasks.map(generateItemHtml).join('')}
+             `;
+            completedList.style.display = completedTasks.length ? 'block' : 'none';
+
+        } else {
+            // History Mode - Single List
+            activeList.innerHTML = tasksToShow.length ? tasksToShow.map(generateItemHtml).join('') :
+                `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">기록이 없습니다.</div>`;
+        }
+    },
+
     initCalendar() {
         const calendarEl = document.getElementById('calendar');
         if (!calendarEl) return;
@@ -521,10 +707,13 @@ const app = {
         } else if (this.data.currentFolder === 'all_with_form') {
             document.getElementById('mainMenu').classList.add('active');
         } else {
-            const activeFolderItem = document.querySelector(`.sidebar .folder-item[data-folder="${this.data.currentFolder}"]`);
             if (activeFolderItem) {
                 activeFolderItem.classList.add('active');
             }
+        }
+
+        if (this.data.currentFolder === 'daily') {
+            document.getElementById('dailyMenu').classList.add('active');
         }
     },
 
