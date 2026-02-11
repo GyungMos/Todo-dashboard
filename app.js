@@ -614,13 +614,21 @@ const app = {
         document.getElementById('editTaskPriority').value = task.priority;
         this.renderEditSubtaskList();
 
-        document.getElementById('editTaskModal').style.display = 'flex';
+        const modal = document.getElementById('editTaskModal');
+        modal.style.display = 'flex';
+        // Trigger reflow to enable transition
+        void modal.offsetWidth;
+        modal.classList.add('show');
     },
 
     closeEditModal() {
-        document.getElementById('editTaskModal').style.display = 'none';
-        this.currentEditTaskId = null;
-        this.tempEditSubtasks = [];
+        const modal = document.getElementById('editTaskModal');
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            this.currentEditTaskId = null;
+            this.tempEditSubtasks = [];
+        }, 300); // Match transition duration
     },
 
     renderEditSubtaskList() {

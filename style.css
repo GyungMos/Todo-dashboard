@@ -2528,12 +2528,44 @@ textarea:focus {
 }
 
 /* Edit Modal Styles */
+/* Edit Modal Styles - Right Sidebar Type */
+#editTaskModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: flex-end;
+    /* Align to right */
+    align-items: stretch;
+    z-index: 2000;
+    /* High z-index to cover sidebar */
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+#editTaskModal.show {
+    opacity: 1;
+}
+
 #editTaskModal .modal-content {
-    max-width: 500px;
-    width: 90%;
-    border-radius: 1.5rem;
-    padding: 0;
-    overflow: hidden;
+    background: var(--card-bg);
+    width: 400px;
+    max-width: 90vw;
+    height: 100%;
+    border-radius: 1.5rem 0 0 1.5rem;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#editTaskModal.show .modal-content {
+    transform: translateX(0);
 }
 
 #editTaskModal .modal-header {
@@ -2542,7 +2574,29 @@ textarea:focus {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f8fafc;
+    background: var(--background);
+}
+
+.btn-close-modal {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-close-modal:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+    transform: rotate(90deg);
 }
 
 #editTaskModal .modal-header h3 {
