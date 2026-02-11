@@ -3095,3 +3095,19 @@ textarea:focus {
     align-items: center !important;
 }
 
+
+/* NUCLEAR VISIBILITY DEBUGGING */
+.stats-card, .stats-grid div {
+    background: blue !important;
+    color: white !important;
+    border: 5px solid yellow !important;
+    min-height: 150px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 9999 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+.stats-value { color: white !important; font-size: 3rem !important; }
+.stats-label { color: yellow !important; }
+
