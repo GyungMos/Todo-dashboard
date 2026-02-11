@@ -3095,11 +3095,3 @@ textarea:focus {
     align-items: center !important;
 }
 
-
-/* DEBUGGING STYLES - TEMPORARY */
-#dashboardView, #taskListView, #calendarView, #dailyView {
-    border: 5px solid red !important;
-    min-height: 500px !important;
-    display: block; /* Force block to see if they exist */
-}
-
