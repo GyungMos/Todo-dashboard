@@ -453,8 +453,9 @@ const app = {
     },
 
     // Daily Task Methods
+    tempDailySubtasks: [],
+
     getTodayString() {
-        // Returns YYYY-MM-DD in local time
         const now = new Date();
         const offset = now.getTimezoneOffset() * 60000;
         return new Date(now - offset).toISOString().split('T')[0];
@@ -475,13 +476,11 @@ const app = {
         } else {
             todayContent.style.display = 'none';
             historyContent.style.display = 'block';
-            // Set default history date to today if not set
             if (!document.getElementById('historyDateInput').value) {
                 document.getElementById('historyDateInput').value = this.getTodayString();
                 this.data.historyDate = this.getTodayString();
             }
         }
-
         this.renderDailyTasks();
     },
 
@@ -491,12 +490,50 @@ const app = {
         this.renderDailyTasks();
     },
 
-    addDailyTask() {
-        const input = document.getElementById('dailyTaskInput');
-        const prioritySelect = document.getElementById('dailyPrioritySelect');
-        const title = input.value.trim();
+    addDailySubtaskPreview() {
+        const input = document.getElementById('dailySubtaskInput');
+        const text = input.value.trim();
+        if (!text) return;
 
-        if (!title) return;
+        this.tempDailySubtasks.push({
+            id: Date.now(),
+            text: text,
+            completed: false
+        });
+
+        input.value = '';
+        input.focus();
+        this.renderDailySubtaskPreview();
+    },
+
+    removeDailySubtaskPreview(id) {
+        this.tempDailySubtasks = this.tempDailySubtasks.filter(t => t.id !== id);
+        this.renderDailySubtaskPreview();
+    },
+
+    renderDailySubtaskPreview() {
+        const container = document.getElementById('dailySubtaskListPreview');
+        if (!container) return;
+
+        container.innerHTML = this.tempDailySubtasks.map(sub => `
+            <div class="preview-item">
+                <span>- ${sub.text}</span>
+                <button class="btn-remove-preview" onclick="app.removeDailySubtaskPreview(${sub.id})">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `).join('');
+    },
+
+    addDailyTask() {
+        const titleInput = document.getElementById('dailyTaskTitle');
+        const prioritySelect = document.getElementById('dailyPrioritySelect');
+        const title = titleInput.value.trim();
+
+        if (!title) {
+            alert('할 일을 입력해주세요.');
+            return;
+        }
 
         const newTask = {
             id: Date.now(),
@@ -504,11 +541,17 @@ const app = {
             title: title,
             priority: prioritySelect.value,
             completed: false,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
+            checklist: [...this.tempDailySubtasks] // Copy temp subtasks
         };
 
         this.data.dailyTasks.unshift(newTask);
-        input.value = '';
+
+        // Reset Inputs
+        titleInput.value = '';
+        this.tempDailySubtasks = [];
+        this.renderDailySubtaskPreview();
+
         this.saveData();
         this.renderDailyTasks();
     },
@@ -519,14 +562,23 @@ const app = {
             task.completed = !task.completed;
             if (task.completed) {
                 task.completedAt = new Date().toISOString();
-                // If in history mode and we toggle a past incomplete task (which is now done), 
-                // it stays on that date.
-                // If in today mode, it just marks related to today.
             } else {
                 delete task.completedAt;
             }
             this.saveData();
             this.renderDailyTasks();
+        }
+    },
+
+    toggleDailySubtask(taskId, subtaskId) {
+        const task = this.data.dailyTasks.find(t => t.id === taskId);
+        if (task && task.checklist) {
+            const subtask = task.checklist.find(s => s.id === subtaskId);
+            if (subtask) {
+                subtask.completed = !subtask.completed;
+                this.saveData();
+                this.renderDailyTasks();
+            }
         }
     },
 
@@ -541,7 +593,6 @@ const app = {
         const isTodayMode = this.data.dailyMode === 'today';
         const targetDate = isTodayMode ? this.getTodayString() : this.data.historyDate;
 
-        // Update Date Header for Today Mode
         if (isTodayMode) {
             const now = new Date();
             const options = { month: 'long', day: 'numeric', weekday: 'long' };
@@ -551,27 +602,13 @@ const app = {
         let tasksToShow = [];
 
         if (isTodayMode) {
-            // Today logic:
-            // 1. Tasks created today
-            // 2. Tasks created in the past BUT NOT completed (Rollover)
-            // 3. Tasks completed today (even if created in past)
             tasksToShow = this.data.dailyTasks.filter(t => {
                 const isCreatedToday = t.date === targetDate;
                 const isPastUncompleted = t.date < targetDate && !t.completed;
                 const isCompletedToday = t.completed && t.completedAt && t.completedAt.startsWith(targetDate);
-
                 return isCreatedToday || isPastUncompleted || isCompletedToday;
             });
         } else {
-            // History logic:
-            // Show tasks that match the target date.
-            // For past dates, usually we want to see what was done that day.
-            // Or tasks that were 'scheduled' for that day.
-            // Given the rollover logic, a task 'belongs' to the day it was completed, or the day it was created if not completed.
-            // Simply showing tasks with t.date === targetDate might miss rollover tasks completed on that day.
-
-            // Revised History Logic:
-            // Show tasks where (date == targetDate) OR (completedAt startsWith targetDate)
             tasksToShow = this.data.dailyTasks.filter(t => {
                 const isCreatedOnDate = t.date === targetDate;
                 const isCompletedOnDate = t.completed && t.completedAt && t.completedAt.startsWith(targetDate);
@@ -579,7 +616,6 @@ const app = {
             });
         }
 
-        // Sort: Uncompleted first, then by priority
         const priorityOrder = { urgent: 3, high: 2, normal: 1 };
         tasksToShow.sort((a, b) => {
             if (a.completed !== b.completed) return a.completed ? 1 : -1;
@@ -587,7 +623,7 @@ const app = {
         });
 
         const activeList = isTodayMode ? document.getElementById('dailyTaskList') : document.getElementById('dailyHistoryList');
-        const completedList = isTodayMode ? document.getElementById('dailyCompletedList') : null; // History mode uses single list
+        const completedList = isTodayMode ? document.getElementById('dailyCompletedList') : null;
 
         if (completedList) completedList.innerHTML = '';
 
@@ -595,19 +631,40 @@ const app = {
             const prioClass = `daily-prio-${task.priority}`;
             const prioText = { urgent: '긴급', high: '중요', normal: '보통' }[task.priority];
 
+            // Checklist HTML
+            let checklistHtml = '';
+            if (task.checklist && task.checklist.length > 0) {
+                checklistHtml = `<div class="daily-checklist">` +
+                    task.checklist.map(sub => `
+                        <div class="checklist-item ${sub.completed ? 'completed' : ''}" 
+                             onclick="event.stopPropagation(); app.toggleDailySubtask(${task.id}, ${sub.id})">
+                            <div class="checklist-checkbox">
+                                ${sub.completed ? '<i class="fas fa-check"></i>' : ''}
+                            </div>
+                            <span>${sub.text}</span>
+                        </div>
+                    `).join('') +
+                    `</div>`;
+            }
+
             return `
                 <div class="daily-task-item ${task.completed ? 'completed' : ''}">
-                    <div class="daily-checkbox" onclick="app.toggleDailyTask(${task.id})">
-                        ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+                    <div style="display:flex; width:100%;">
+                        <div class="daily-checkbox" onclick="app.toggleDailyTask(${task.id})">
+                            ${task.completed ? '<i class="fas fa-check"></i>' : ''}
+                        </div>
+                        <div class="daily-task-content">
+                            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                                <span class="daily-task-title">${task.title}</span>
+                                <span class="daily-prio-badge ${prioClass}">${prioText}</span>
+                                ${task.date !== this.getTodayString() && !task.completed ? '<span class="daily-cheer" style="font-size:0.8rem; margin-left:0.5rem;">(이월됨)</span>' : ''}
+                            </div>
+                            ${checklistHtml}
+                        </div>
+                        <button class="btn-delete-daily" onclick="app.deleteDailyTask(${task.id})">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
-                    <div class="daily-task-content">
-                        <span class="daily-task-title">${task.title}</span>
-                        <span class="daily-prio-badge ${prioClass}">${prioText}</span>
-                        ${task.date !== this.getTodayString() && !task.completed ? '<span class="daily-cheer" style="font-size:0.8rem; margin-left:0.5rem;">(이월됨)</span>' : ''}
-                    </div>
-                    <button class="btn-delete-daily" onclick="app.deleteDailyTask(${task.id})">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
                 </div>
             `;
         };
@@ -626,7 +683,6 @@ const app = {
             completedList.style.display = completedTasks.length ? 'block' : 'none';
 
         } else {
-            // History Mode - Single List
             activeList.innerHTML = tasksToShow.length ? tasksToShow.map(generateItemHtml).join('') :
                 `<div style="text-align:center; padding: 2rem; color: var(--text-muted);">기록이 없습니다.</div>`;
         }

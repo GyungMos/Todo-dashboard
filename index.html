@@ -112,15 +112,48 @@
                 </div>
 
                 <div class="daily-input-container">
-                    <div class="daily-input-row">
-                        <input type="text" id="dailyTaskInput" placeholder="오늘 할 일을 입력하세요..."
-                            onkeypress="if(event.key === 'Enter') app.addDailyTask()">
-                        <select id="dailyPrioritySelect">
-                            <option value="normal">보통</option>
-                            <option value="high">중요</option>
-                            <option value="urgent">긴급</option>
-                        </select>
-                        <button class="btn-primary" onclick="app.addDailyTask()">추가</button>
+                    <div class="daily-form-wrapper">
+                        <!-- Row 1: Title Input -->
+                        <div class="daily-form-row">
+                            <input type="text" id="dailyTaskTitle" class="daily-title-input"
+                                placeholder="오늘 할 일 제목을 입력하세요..."
+                                onkeypress="if(event.key === 'Enter') document.getElementById('dailySubtaskInput').focus()">
+                        </div>
+
+                        <!-- Row 2: Priority & Subtasks -->
+                        <div class="daily-form-row split">
+                            <div class="daily-form-group priority-group">
+                                <label>중요도</label>
+                                <div class="priority-selector-wrapper">
+                                    <select id="dailyPrioritySelect" class="daily-priority-select">
+                                        <option value="urgent">🔥 긴급</option>
+                                        <option value="high">⚡ 중요</option>
+                                        <option value="normal" selected>⚖️ 보통</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="daily-form-group subtask-group">
+                                <label>세부 체크리스트</label>
+                                <div class="daily-subtask-input-wrapper">
+                                    <input type="text" id="dailySubtaskInput" placeholder="하위 항목 입력..."
+                                        onkeypress="if(event.key === 'Enter') app.addDailySubtaskPreview()">
+                                    <button class="btn-icon-add" onclick="app.addDailySubtaskPreview()">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div id="dailySubtaskListPreview" class="daily-subtask-preview">
+                                    <!-- Temporary subtasks go here -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Row 3: Add Button -->
+                        <div class="daily-form-footer">
+                            <button class="btn-daily-submit" onclick="app.addDailyTask()">
+                                <i class="fas fa-paper-plane"></i> 할 일 등록
+                            </button>
+                        </div>
                     </div>
                 </div>
 
