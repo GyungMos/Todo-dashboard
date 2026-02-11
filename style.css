@@ -1351,6 +1351,240 @@ textarea:focus {
 /* Today's To-Do Styles */
 /* ========================================= */
 
+/* Daily Task Form Styles */
+.daily-form-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.daily-form-wrapper:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.daily-form-row {
+    margin-bottom: 1.2rem;
+}
+
+.daily-title-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+    transition: all 0.2s;
+}
+
+.daily-title-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.daily-form-row.split {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.daily-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.daily-form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-left: 0.2rem;
+}
+
+.priority-group {
+    flex: 0 0 140px;
+}
+
+.subtask-group {
+    flex: 1;
+}
+
+.daily-priority-select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.daily-subtask-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.daily-subtask-input-wrapper input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+
+.btn-icon-add {
+    padding: 0.8rem 1rem;
+    border: none;
+    background: var(--background);
+    color: var(--primary-color);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-add:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.daily-subtask-preview {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.preview-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: rgba(var(--primary-rgb), 0.05);
+    border-radius: 0.6rem;
+    font-size: 0.95rem;
+    border: 1px solid transparent;
+}
+
+.btn-remove-preview {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    padding: 0.2rem;
+    transition: opacity 0.2s;
+}
+
+.btn-remove-preview:hover {
+    opacity: 1;
+}
+
+.daily-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-daily-submit {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 2.5rem;
+    border-radius: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.btn-daily-submit:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px -1px rgba(79, 70, 229, 0.3);
+}
+
+/* Checklist Item Styles - Refined */
+.daily-checklist {
+    margin-top: 1rem;
+    padding-left: 2.5rem;
+    /* Indent from main checkbox */
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    /* Align top for multiline text */
+    gap: 0.8rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 0.2rem 0;
+    transition: all 0.2s;
+}
+
+.checklist-item.completed {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+/* Custom Checkbox Design */
+.checklist-checkbox {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid #cbd5e1;
+    /* Default border color */
+    border-radius: 6px;
+    /* Soft square */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+    /* Hide checkmark by default */
+    background: transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 1px;
+    /* Optical alignment */
+}
+
+/* Hover state for unchecked */
+.checklist-item:hover .checklist-checkbox {
+    border-color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.05);
+}
+
+/* Checked State */
+.checklist-item.completed .checklist-checkbox {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    /* Show checkmark */
+}
+
 .daily-header-tabs {
     display: flex;
     gap: 1rem;
@@ -1429,46 +1663,50 @@ textarea:focus {
     gap: 1rem;
 }
 
+/* Daily Task Item Card Refinement */
 .daily-task-item {
     background: var(--card-bg);
-    padding: 1rem 1.5rem;
-    border-radius: 1rem;
     border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.2rem;
+    margin-bottom: 1rem;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
     transition: all 0.2s;
-    box-shadow: var(--shadow-sm);
 }
 
 .daily-task-item:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow);
+    border-color: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .daily-task-item.completed {
-    opacity: 0.7;
-    background: rgba(0, 0, 0, 0.02);
+    background: var(--background);
+    /* Slightly different bg for completed */
+    opacity: 0.9;
 }
 
 .daily-checkbox {
     width: 24px;
     height: 24px;
+    min-width: 24px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
-    /* Slightly rounded square */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    font-size: 14px;
+    color: transparent;
     transition: all 0.2s;
-    color: white;
-    font-size: 0.9rem;
+    margin-top: 2px;
 }
 
 .daily-task-item.completed .daily-checkbox {
-    background: var(--primary-color);
-    border-color: var(--primary-color);
+    background: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: white;
 }
 
 .daily-task-content {
@@ -1852,199 +2090,231 @@ textarea:focus {
 
 .folder-item[class*="depth-"] {
     position: relative;
-}/ *   D a i l y   T a s k   F o r m   S t y l e s   * /  
- . d a i l y - f o r m - w r a p p e r   {  
-         b a c k g r o u n d :   v a r ( - - c a r d - b g ) ;  
-         b o r d e r :   1 p x   s o l i d   v a r ( - - b o r d e r - c o l o r ) ;  
-         b o r d e r - r a d i u s :   v a r ( - - r a d i u s ) ;  
-         p a d d i n g :   1 . 5 r e m ;  
-         b o x - s h a d o w :   v a r ( - - s h a d o w ) ;  
-         m a r g i n - b o t t o m :   2 r e m ;  
- }  
-  
- . d a i l y - f o r m - r o w   {  
-         m a r g i n - b o t t o m :   1 . 2 r e m ;  
- }  
-  
- . d a i l y - t i t l e - i n p u t   {  
-         w i d t h :   1 0 0 % ;  
-         p a d d i n g :   0 . 8 r e m   1 r e m ;  
-         f o n t - s i z e :   1 . 1 r e m ;  
-         f o n t - w e i g h t :   6 0 0 ;  
-         b o r d e r :   1 p x   s o l i d   v a r ( - - b o r d e r - c o l o r ) ;  
-         b o r d e r - r a d i u s :   0 . 5 r e m ;  
-         b a c k g r o u n d :   v a r ( - - i n p u t - b g ) ;  
-         c o l o r :   v a r ( - - t e x t - m a i n ) ;  
-         t r a n s i t i o n :   a l l   0 . 2 s ;  
- }  
-  
- . d a i l y - t i t l e - i n p u t : f o c u s   {  
-         o u t l i n e :   n o n e ;  
-         b o r d e r - c o l o r :   v a r ( - - p r i m a r y - c o l o r ) ;  
-         b o x - s h a d o w :   0   0   0   3 p x   r g b a ( 7 9 ,   7 0 ,   2 2 9 ,   0 . 1 ) ;  
- }  
-  
- . d a i l y - f o r m - r o w . s p l i t   {  
-         d i s p l a y :   f l e x ;  
-         g a p :   1 . 5 r e m ;  
- }  
-  
- . d a i l y - f o r m - g r o u p   {  
-         d i s p l a y :   f l e x ;  
-         f l e x - d i r e c t i o n :   c o l u m n ;  
-         g a p :   0 . 5 r e m ;  
- }  
-  
- . d a i l y - f o r m - g r o u p   l a b e l   {  
-         f o n t - s i z e :   0 . 8 5 r e m ;  
-         f o n t - w e i g h t :   6 0 0 ;  
-         c o l o r :   v a r ( - - t e x t - m u t e d ) ;  
- }  
-  
- . p r i o r i t y - g r o u p   {  
-         f l e x :   0   0   1 2 0 p x ;  
- }  
-  
- . s u b t a s k - g r o u p   {  
-         f l e x :   1 ;  
- }  
-  
- . d a i l y - p r i o r i t y - s e l e c t   {  
-         w i d t h :   1 0 0 % ;  
-         p a d d i n g :   0 . 6 r e m ;  
-         b o r d e r :   1 p x   s o l i d   v a r ( - - b o r d e r - c o l o r ) ;  
-         b o r d e r - r a d i u s :   0 . 5 r e m ;  
-         b a c k g r o u n d :   v a r ( - - i n p u t - b g ) ;  
-         c o l o r :   v a r ( - - t e x t - m a i n ) ;  
-         f o n t - s i z e :   0 . 9 r e m ;  
-         c u r s o r :   p o i n t e r ;  
- }  
-  
- . d a i l y - s u b t a s k - i n p u t - w r a p p e r   {  
-         d i s p l a y :   f l e x ;  
-         g a p :   0 . 5 r e m ;  
- }  
-  
- . d a i l y - s u b t a s k - i n p u t - w r a p p e r   i n p u t   {  
-         f l e x :   1 ;  
-         p a d d i n g :   0 . 6 r e m   1 r e m ;  
-         b o r d e r :   1 p x   s o l i d   v a r ( - - b o r d e r - c o l o r ) ;  
-         b o r d e r - r a d i u s :   0 . 5 r e m ;  
-         b a c k g r o u n d :   v a r ( - - i n p u t - b g ) ;  
-         c o l o r :   v a r ( - - t e x t - m a i n ) ;  
- }  
-  
- . b t n - i c o n - a d d   {  
-         p a d d i n g :   0 . 6 r e m   0 . 8 r e m ;  
-         b o r d e r :   n o n e ;  
-         b a c k g r o u n d :   v a r ( - - b a c k g r o u n d ) ;  
-         c o l o r :   v a r ( - - p r i m a r y - c o l o r ) ;  
-         b o r d e r - r a d i u s :   0 . 5 r e m ;  
-         c u r s o r :   p o i n t e r ;  
-         b o r d e r :   1 p x   s o l i d   v a r ( - - b o r d e r - c o l o r ) ;  
-         t r a n s i t i o n :   a l l   0 . 2 s ;  
- }  
-  
- . b t n - i c o n - a d d : h o v e r   {  
-         b a c k g r o u n d :   v a r ( - - p r i m a r y - c o l o r ) ;  
-         c o l o r :   w h i t e ;  
- }  
-  
- . d a i l y - s u b t a s k - p r e v i e w   {  
-         m a r g i n - t o p :   0 . 5 r e m ;  
-         d i s p l a y :   f l e x ;  
-         f l e x - d i r e c t i o n :   c o l u m n ;  
-         g a p :   0 . 4 r e m ;  
- }  
-  
- . p r e v i e w - i t e m   {  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         j u s t i f y - c o n t e n t :   s p a c e - b e t w e e n ;  
-         p a d d i n g :   0 . 4 r e m   0 . 8 r e m ;  
-         b a c k g r o u n d :   r g b a ( 0 ,   0 ,   0 ,   0 . 0 2 ) ;  
-         b o r d e r - r a d i u s :   0 . 4 r e m ;  
-         f o n t - s i z e :   0 . 9 r e m ;  
- }  
-  
- . b t n - r e m o v e - p r e v i e w   {  
-         b a c k g r o u n d :   n o n e ;  
-         b o r d e r :   n o n e ;  
-         c o l o r :   # e f 4 4 4 4 ;  
-         c u r s o r :   p o i n t e r ;  
-         f o n t - s i z e :   0 . 8 r e m ;  
-         o p a c i t y :   0 . 7 ;  
- }  
-  
- . b t n - r e m o v e - p r e v i e w : h o v e r   {  
-         o p a c i t y :   1 ;  
- }  
-  
- . d a i l y - f o r m - f o o t e r   {  
-         d i s p l a y :   f l e x ;  
-         j u s t i f y - c o n t e n t :   f l e x - e n d ;  
-         m a r g i n - t o p :   1 r e m ;  
- }  
-  
- . b t n - d a i l y - s u b m i t   {  
-         b a c k g r o u n d :   v a r ( - - p r i m a r y - c o l o r ) ;  
-         c o l o r :   w h i t e ;  
-         b o r d e r :   n o n e ;  
-         p a d d i n g :   0 . 8 r e m   2 r e m ;  
-         b o r d e r - r a d i u s :   0 . 5 r e m ;  
-         f o n t - w e i g h t :   6 0 0 ;  
-         c u r s o r :   p o i n t e r ;  
-         t r a n s i t i o n :   a l l   0 . 2 s ;  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         g a p :   0 . 5 r e m ;  
- }  
-  
- . b t n - d a i l y - s u b m i t : h o v e r   {  
-         b a c k g r o u n d :   v a r ( - - p r i m a r y - h o v e r ) ;  
-         t r a n s f o r m :   t r a n s l a t e Y ( - 1 p x ) ;  
- }  
-  
- / *   C h e c k l i s t   I t e m   S t y l e s   * /  
- . d a i l y - c h e c k l i s t   {  
-         m a r g i n - t o p :   0 . 8 r e m ;  
-         p a d d i n g - l e f t :   2 r e m ;  
-         d i s p l a y :   f l e x ;  
-         f l e x - d i r e c t i o n :   c o l u m n ;  
-         g a p :   0 . 3 r e m ;  
-         w i d t h :   1 0 0 % ;  
- }  
-  
- . c h e c k l i s t - i t e m   {  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         g a p :   0 . 6 r e m ;  
-         f o n t - s i z e :   0 . 9 r e m ;  
-         c o l o r :   v a r ( - - t e x t - m u t e d ) ;  
-         c u r s o r :   p o i n t e r ;  
- }  
-  
- . c h e c k l i s t - i t e m . c o m p l e t e d   {  
-         t e x t - d e c o r a t i o n :   l i n e - t h r o u g h ;  
-         o p a c i t y :   0 . 7 ;  
- }  
-  
- . c h e c k l i s t - c h e c k b o x   {  
-         w i d t h :   1 6 p x ;  
-         h e i g h t :   1 6 p x ;  
-         b o r d e r :   2 p x   s o l i d   v a r ( - - b o r d e r - c o l o r ) ;  
-         b o r d e r - r a d i u s :   4 p x ;  
-         d i s p l a y :   f l e x ;  
-         a l i g n - i t e m s :   c e n t e r ;  
-         j u s t i f y - c o n t e n t :   c e n t e r ;  
-         f o n t - s i z e :   1 0 p x ;  
-         c o l o r :   w h i t e ;  
-         t r a n s i t i o n :   a l l   0 . 2 s ;  
-         f l e x - s h r i n k :   0 ;  
- }  
-  
- . c h e c k l i s t - i t e m . c o m p l e t e d   . c h e c k l i s t - c h e c k b o x   {  
-         b a c k g r o u n d :   v a r ( - - s e c o n d a r y - c o l o r ) ;  
-         b o r d e r - c o l o r :   v a r ( - - s e c o n d a r y - c o l o r ) ;  
- }  
- 
+}
+
+/* Daily Task Form Styles (Refined) */
+.daily-form-wrapper {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+}
+
+.daily-form-wrapper:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.daily-form-row {
+    margin-bottom: 1.2rem;
+}
+
+.daily-title-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+    transition: all 0.2s;
+}
+
+.daily-title-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.daily-form-row.split {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.daily-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.daily-form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-left: 0.2rem;
+}
+
+.priority-group {
+    flex: 0 0 140px;
+}
+
+.subtask-group {
+    flex: 1;
+}
+
+.daily-priority-select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.daily-subtask-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.daily-subtask-input-wrapper input {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.8rem;
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+
+.btn-icon-add {
+    padding: 0.8rem 1rem;
+    border: none;
+    background: var(--background);
+    color: var(--primary-color);
+    border-radius: 0.8rem;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-add:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.daily-subtask-preview {
+    margin-top: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.preview-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 1rem;
+    background: rgba(79, 70, 229, 0.05);
+    /* Fixed rgb var usage */
+    border-radius: 0.6rem;
+    font-size: 0.95rem;
+    border: 1px solid transparent;
+}
+
+.btn-remove-preview {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    padding: 0.2rem;
+    transition: opacity 0.2s;
+}
+
+.btn-remove-preview:hover {
+    opacity: 1;
+}
+
+.daily-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+.btn-daily-submit {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.8rem 2.5rem;
+    border-radius: 0.8rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+}
+
+.btn-daily-submit:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px -1px rgba(79, 70, 229, 0.3);
+}
+
+/* Checklist Item Styles - Refined */
+.daily-checklist {
+    margin-top: 1rem;
+    padding-left: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    width: 100%;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 0.2rem 0;
+    transition: all 0.2s;
+}
+
+.checklist-item.completed {
+    text-decoration: line-through;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+/* Custom Checkbox Design */
+.checklist-checkbox {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: transparent;
+    background: transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 1px;
+}
+
+.checklist-item:hover .checklist-checkbox {
+    border-color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.05);
+    /* Fixed rgba color */
+}
+
+.checklist-item.completed .checklist-checkbox {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
