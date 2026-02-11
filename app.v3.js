@@ -451,6 +451,10 @@ const app = {
             }
             try {
                 this.updateDashboardWidgets(this.data.tasks);
+                // DEBUG: Check if elements exist and have content
+                const stats = document.getElementById('statsDashboard');
+                console.log("Stats HTML Check:", stats ? stats.innerHTML.substring(0, 100) + "..." : "NOT FOUND");
+                console.log("Stats Visibility:", stats ? window.getComputedStyle(stats).display : "N/A");
             } catch (err) {
                 console.error("Dashboard Widgets update failed:", err);
             }
