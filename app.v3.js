@@ -64,16 +64,22 @@ const app = {
     sortables: [],
 
     async init() {
-        await this.loadData();
-        this.renderFolders();
-        this.renderMembers();
-        this.renderTasks();
-        this.updateFolderSelect();
-        this.updateFilterOptions();
-        this.initCharts();
-        this.setupEventListeners();
-        this.selectFolder('dashboard'); // 대시보드를 기본 화면으로 설정
-        console.log("Application Initialized");
+        console.log("🚀 App Init v3.1 - Fix Applied (ActiveFolderItem)");
+        try {
+            await this.loadData();
+            console.log("Data loaded", this.data);
+            this.renderFolders();
+            this.renderMembers();
+            this.renderTasks();
+            this.updateFolderSelect();
+            this.updateFilterOptions();
+            this.initCharts();
+            this.setupEventListeners();
+            this.selectFolder('dashboard'); // 대시보드를 기본 화면으로 설정
+            console.log("Application Initialized Successfully");
+        } catch (e) {
+            console.error("CRITICAL INIT ERROR:", e);
+        }
     },
 
     setupEventListeners() {
@@ -443,7 +449,11 @@ const app = {
             } catch (err) {
                 console.error("Chart update failed:", err);
             }
-            this.updateDashboardWidgets(this.data.tasks);
+            try {
+                this.updateDashboardWidgets(this.data.tasks);
+            } catch (err) {
+                console.error("Dashboard Widgets update failed:", err);
+            }
         } else if (folder === 'daily') {
             if (dailyView) {
                 dailyView.style.setProperty('display', 'block', 'important');
