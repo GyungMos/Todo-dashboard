@@ -413,10 +413,10 @@ const app = {
         if (taskListView) taskListView.style.display = 'none';
         if (dashboardView) dashboardView.style.display = 'none';
         if (calendarView) calendarView.style.display = 'none';
-        if (dailyView) dailyView.style.display = 'none';
+        if (dailyView) dailyView.style.setProperty('display', 'none', 'important');
 
         if (folder === 'dashboard') {
-            dashboardView.style.display = 'block';
+            dashboardView.style.setProperty('display', 'block', 'important');
             try {
                 this.updateCharts(this.data.tasks);
             } catch (err) {
@@ -425,14 +425,16 @@ const app = {
             this.updateDashboardWidgets(this.data.tasks);
         } else if (folder === 'daily') {
             if (dailyView) {
-                dailyView.style.display = 'block';
+                dailyView.style.setProperty('display', 'block', 'important');
                 this.switchDailyMode('today');
+                // Force other views to be hidden just in case
+                if (taskListView) taskListView.style.setProperty('display', 'none', 'important');
             }
         } else if (folder === 'all_with_form') {
-            taskForm.style.display = 'block';
-            taskListView.style.display = 'block';
+            if (taskForm) taskForm.style.setProperty('display', 'block', 'important');
+            taskListView.style.setProperty('display', 'block', 'important');
         } else {
-            taskListView.style.display = 'block';
+            taskListView.style.setProperty('display', 'block', 'important');
         }
 
         this.updateSidebarUI();
@@ -460,7 +462,7 @@ const app = {
             // 일단 기본 목록 뷰로 복귀시킵니다. (또는 직전 폴더 상태 확인 필요)
             // 여기서는 심플하게 전체 목록으로 갑니다.
             taskListView.style.display = 'block';
-            if (dailyView) dailyView.style.display = 'none';
+            if (dailyView) dailyView.style.setProperty('display', 'none', 'important');
             calendarView.style.display = 'none';
             if (searchBar) searchBar.style.display = 'block';
         }
