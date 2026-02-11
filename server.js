@@ -76,6 +76,10 @@ app.post('/api/upload', upload.single('file'), (req, res) => {
 });
 
 // API Routes
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 app.get('/api/data', async (req, res) => {
     try {
         if (MONGODB_URI) {
