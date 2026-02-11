@@ -968,6 +968,7 @@ const app = {
         } else if (this.data.currentFolder === 'all_with_form') {
             document.getElementById('mainMenu').classList.add('active');
         } else {
+            const activeFolderItem = document.querySelector(`.sidebar .folder-item[data-folder="${this.data.currentFolder}"]`);
             if (activeFolderItem) {
                 activeFolderItem.classList.add('active');
             }
