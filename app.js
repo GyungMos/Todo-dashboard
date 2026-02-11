@@ -29,7 +29,6 @@ const app = {
     calendar: null,
     charts: {
         weeklyTrend: null,
-        weeklyTrend: null,
         categoryDist: null
     },
     sortables: [],

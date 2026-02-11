@@ -3051,3 +3051,15 @@ textarea:focus {
     align-items: center;
 }
 
+
+/* Daily View Layout Refinements (Step 2724) */
+#dailyTaskList {
+    margin-top: 3rem !important; /* Force separation */
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+#dailyCompletedList {
+    margin-top: 2rem;
+}
+
