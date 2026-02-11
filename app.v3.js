@@ -454,7 +454,15 @@ const app = {
                 // DEBUG: Check if elements exist and have content
                 const stats = document.getElementById('statsDashboard');
                 console.log("Stats HTML Check:", stats ? stats.innerHTML.substring(0, 100) + "..." : "NOT FOUND");
-                console.log("Stats Visibility:", stats ? window.getComputedStyle(stats).display : "N/A");
+                // DEBUG: Check Layout Dimensions
+                const main = document.querySelector('.main-content');
+                const body = document.body;
+                if (main) {
+                    const rect = main.getBoundingClientRect();
+                    const style = window.getComputedStyle(main);
+                    console.log(`Main Content: ${rect.width}px x ${rect.height}px, Display: ${style.display}, Visibility: ${style.visibility}, Opacity: ${style.opacity}`);
+                }
+                console.log(`Body: ${body.clientWidth}px x ${body.clientHeight}px, Display: ${window.getComputedStyle(body).display}`);
             } catch (err) {
                 console.error("Dashboard Widgets update failed:", err);
             }
