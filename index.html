@@ -221,229 +221,229 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Calendar View -->
-            <div id="calendarView"
-                style="display: none; margin-bottom: 3rem; background: var(--card-bg); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow);">
-                <div id="calendar"></div>
+        <!-- Calendar View -->
+        <div id="calendarView"
+            style="display: none; margin-bottom: 3rem; background: var(--card-bg); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border-color); box-shadow: var(--shadow);">
+            <div id="calendar"></div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboardView" style="display: none; margin-bottom: 2rem;">
+            <div class="stats-grid" id="statsDashboard">
+                <div class="stats-card" id="stat-all" onclick="app.setStatFilter('all')">
+                    <div class="stats-label">전체 업무</div>
+                    <div class="stats-value" id="totalTasksCount">0</div>
+                </div>
+                <div class="stats-card" id="stat-active" onclick="app.setStatFilter('active')">
+                    <div class="stats-label">진행 중</div>
+                    <div class="stats-value" id="activeTasksCount" style="color: var(--primary-color);">0</div>
+                </div>
+                <div class="stats-card" id="stat-urgent" onclick="app.setStatFilter('urgent')">
+                    <div class="stats-label">마감 임박</div>
+                    <div class="stats-value" id="urgentTasksCount" style="color: #ef4444;">0</div>
+                </div>
+                <div class="stats-card" id="stat-completed" onclick="app.setStatFilter('completed')">
+                    <div class="stats-label">완료</div>
+                    <div class="stats-value" id="completedTasksCount" style="color: #10b981;">0</div>
+                </div>
             </div>
 
-            <!-- Dashboard View -->
-            <div id="dashboardView" style="display: none; margin-bottom: 2rem;">
-                <div class="stats-grid" id="statsDashboard">
-                    <div class="stats-card" id="stat-all" onclick="app.setStatFilter('all')">
-                        <div class="stats-label">전체 업무</div>
-                        <div class="stats-value" id="totalTasksCount">0</div>
-                    </div>
-                    <div class="stats-card" id="stat-active" onclick="app.setStatFilter('active')">
-                        <div class="stats-label">진행 중</div>
-                        <div class="stats-value" id="activeTasksCount" style="color: var(--primary-color);">0</div>
-                    </div>
-                    <div class="stats-card" id="stat-urgent" onclick="app.setStatFilter('urgent')">
-                        <div class="stats-label">마감 임박</div>
-                        <div class="stats-value" id="urgentTasksCount" style="color: #ef4444;">0</div>
-                    </div>
-                    <div class="stats-card" id="stat-completed" onclick="app.setStatFilter('completed')">
-                        <div class="stats-label">완료</div>
-                        <div class="stats-value" id="completedTasksCount" style="color: #10b981;">0</div>
+            <!-- Enhanced Visualization Charts -->
+            <div class="chart-section" id="chartSection">
+                <div class="chart-card">
+                    <h3 class="chart-title">📈 <span id="trendChartTitle">주간 활동 트렌드 (최근 7일)</span></h3>
+                    <div class="chart-container">
+                        <canvas id="weeklyTrendChart"></canvas>
                     </div>
                 </div>
-
-                <!-- Enhanced Visualization Charts -->
-                <div class="chart-section" id="chartSection">
-                    <div class="chart-card">
-                        <h3 class="chart-title">📈 <span id="trendChartTitle">주간 활동 트렌드 (최근 7일)</span></h3>
-                        <div class="chart-container">
-                            <canvas id="weeklyTrendChart"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3 class="chart-title">📊 <span id="distChartTitle">카테고리별 업무 분포</span></h3>
-                        <div class="chart-container">
-                            <canvas id="categoryDistChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dashboard Summary Widgets -->
-                <div class="dashboard-widgets-grid">
-                    <!-- A: Urgent Top 5 List -->
-                    <div class="widget-card">
-                        <h3 class="widget-title">🚨 마감 임박 업무 (Top 5)</h3>
-                        <div class="summary-list" id="urgentSummaryList">
-                            <!-- Items will be injected here -->
-                        </div>
-                    </div>
-
-                    <!-- B: Category Progress -->
-                    <div class="widget-card">
-                        <h3 class="widget-title">📊 프로젝트 진척도</h3>
-                        <div class="progress-list" id="progressList">
-                            <!-- Progress bars will be injected here -->
-                        </div>
-                    </div>
-
-                    <!-- C: Priority Status -->
-                    <div class="widget-card">
-                        <h3 class="widget-title">⚖️ 우선순위 현황</h3>
-                        <div class="prio-summary-grid" id="prioritySummary">
-                            <!-- Priority counts will be injected here -->
-                        </div>
+                <div class="chart-card">
+                    <h3 class="chart-title">📊 <span id="distChartTitle">카테고리별 업무 분포</span></h3>
+                    <div class="chart-container">
+                        <canvas id="categoryDistChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <div id="taskListView">
-                <!-- Multi-Filter Bar -->
-                <div class="filter-section">
-                    <div class="filter-row">
-                        <div class="filter-group" style="flex: 2;">
-                            <div class="search-bar">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <circle cx="11" cy="11" r="8" />
-                                    <path d="M21 21l-4.35-4.35" />
-                                </svg>
-                                <input type="text" id="searchInput" placeholder="업무 제목 또는 내용 검색..."
-                                    oninput="app.handleFilterChange()">
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <select id="filterCategory" onchange="app.handleFilterChange()">
-                                <option value="all">모든 카테고리</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <select id="filterAssignee" onchange="app.handleFilterChange()">
-                                <option value="all">모든 담당자</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <select id="filterPriority" onchange="app.handleFilterChange()">
-                                <option value="all">모든 우선순위</option>
-                                <option value="critical">최우선</option>
-                                <option value="urgent">긴급</option>
-                                <option value="high">높음</option>
-                                <option value="normal">보통</option>
-                                <option value="low">낮음</option>
-                                <option value="lowest">최하</option>
-                            </select>
-                        </div>
-                        <div id="sortControlArea" style="display: flex; align-items: center;"></div>
+            <!-- Dashboard Summary Widgets -->
+            <div class="dashboard-widgets-grid">
+                <!-- A: Urgent Top 5 List -->
+                <div class="widget-card">
+                    <h3 class="widget-title">🚨 마감 임박 업무 (Top 5)</h3>
+                    <div class="summary-list" id="urgentSummaryList">
+                        <!-- Items will be injected here -->
                     </div>
                 </div>
 
-                <!-- New Task Form -->
-                <form class="task-form" id="taskForm">
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label class="input-label">업무 카테고리</label>
-                            <select id="folderSelect" required></select>
-                        </div>
-                        <div class="input-group">
-                            <label class="input-label">업무 제목</label>
-                            <input type="text" id="titleInput" placeholder="예: [연차] 개인 사유" required>
-                        </div>
-                        <div class="input-group" style="flex: 0.5;">
-                            <label class="input-label">우선순위</label>
-                            <select id="prioritySelect">
-                                <option value="critical">🚨 최우선</option>
-                                <option value="urgent">🔥 긴급</option>
-                                <option value="high">⚡ 높음</option>
-                                <option value="normal" selected>⚖️ 보통</option>
-                                <option value="low">🧊 낮음</option>
-                                <option value="lowest">🍃 최하</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="input-row">
-                        <div class="input-group">
-                            <label class="input-label">시작 날짜</label>
-                            <input type="date" id="startDateInput" max="9999-12-31" required>
-                        </div>
-                        <div class="input-group">
-                            <label class="input-label">종료 날짜</label>
-                            <input type="date" id="endDateInput" max="9999-12-31" required>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">담당자 선택</label>
-                        <div class="member-selector" id="memberSelector">
-                            <!-- Members will be injected here -->
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">설명 및 메모</label>
-                        <textarea id="notesInput" placeholder="업무에 대한 상세 설명을 입력하세요..." rows="3"></textarea>
-                    </div>
-                    <div class="input-group">
-                        <label class="input-label">첨부 파일</label>
-                        <div class="file-upload-container" id="dropZone">
-                            <input type="file" id="fileInput" multiple style="display: none;"
-                                onchange="app.handleFileUpload(this.files)">
-                            <div class="file-upload-placeholder" onclick="document.getElementById('fileInput').click()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                    <polyline points="17 8 12 3 7 8" />
-                                    <line x1="12" y1="3" x2="12" y2="15" />
-                                </svg>
-                                <span>클릭하여 파일 선택 또는 드래그 앤 드롭</span>
-                            </div>
-                            <div id="fileList" class="file-list"></div>
-                        </div>
-                    </div>
-
-                    <!-- Sub-task Section -->
-                    <div class="input-group">
-                        <label class="input-label">체크리스트 (Sub-tasks)</label>
-                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
-                            <input type="text" id="subTaskInput" placeholder="추가할 하위 업무 입력...">
-                            <button type="button" class="btn-add" style="width: auto; white-space: nowrap;"
-                                onclick="app.handleAddSubTask()">추가</button>
-                        </div>
-                        <div id="subTaskFormList"
-                            style="display: flex; flex-direction: column; gap: 0.5rem; background: rgba(0,0,0,0.02); padding: 1rem; border-radius: 0.5rem;">
-                            <!-- Temp sub-tasks will be here -->
-                        </div>
-                    </div>
-
-                    <input type="hidden" id="editTaskId">
-                    <div style="display: flex; gap: 1rem;">
-                        <button type="submit" class="btn-add" id="submitBtn">업무 등록하기</button>
-                        <button type="button" class="btn-delete" id="cancelEditBtn" style="display: none; width: auto;"
-                            onclick="app.cancelEdit()">취소</button>
-                    </div>
-                </form>
-
-                <div class="section">
-                    <h3 class="section-title">🚀 진행 중인 업무</h3>
-                    <div class="task-list" id="activeTaskList">
-                        <!-- Tasks will be injected here -->
+                <!-- B: Category Progress -->
+                <div class="widget-card">
+                    <h3 class="widget-title">📊 프로젝트 진척도</h3>
+                    <div class="progress-list" id="progressList">
+                        <!-- Progress bars will be injected here -->
                     </div>
                 </div>
 
-                <div class="section">
-                    <div class="section-header"
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 class="section-title" style="margin-bottom: 0;">✅ 완료된 업무</h3>
-                        <button class="btn-toggle-section" onclick="app.toggleCompletedSection()"
-                            id="btnToggleCompleted">
-                            <span id="toggleText">접기</span>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" id="toggleIcon">
-                                <path d="M18 15l-6-6-6 6" />
+                <!-- C: Priority Status -->
+                <div class="widget-card">
+                    <h3 class="widget-title">⚖️ 우선순위 현황</h3>
+                    <div class="prio-summary-grid" id="prioritySummary">
+                        <!-- Priority counts will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="taskListView">
+            <!-- Multi-Filter Bar -->
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-group" style="flex: 2;">
+                        <div class="search-bar">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <path d="M21 21l-4.35-4.35" />
                             </svg>
-                        </button>
+                            <input type="text" id="searchInput" placeholder="업무 제목 또는 내용 검색..."
+                                oninput="app.handleFilterChange()">
+                        </div>
                     </div>
-                    <div class="task-list" id="completedTaskList">
-                        <!-- Completed tasks will be injected here -->
+                    <div class="filter-group">
+                        <select id="filterCategory" onchange="app.handleFilterChange()">
+                            <option value="all">모든 카테고리</option>
+                        </select>
                     </div>
+                    <div class="filter-group">
+                        <select id="filterAssignee" onchange="app.handleFilterChange()">
+                            <option value="all">모든 담당자</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <select id="filterPriority" onchange="app.handleFilterChange()">
+                            <option value="all">모든 우선순위</option>
+                            <option value="critical">최우선</option>
+                            <option value="urgent">긴급</option>
+                            <option value="high">높음</option>
+                            <option value="normal">보통</option>
+                            <option value="low">낮음</option>
+                            <option value="lowest">최하</option>
+                        </select>
+                    </div>
+                    <div id="sortControlArea" style="display: flex; align-items: center;"></div>
                 </div>
             </div>
+
+            <!-- New Task Form -->
+            <form class="task-form" id="taskForm">
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">업무 카테고리</label>
+                        <select id="folderSelect" required></select>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">업무 제목</label>
+                        <input type="text" id="titleInput" placeholder="예: [연차] 개인 사유" required>
+                    </div>
+                    <div class="input-group" style="flex: 0.5;">
+                        <label class="input-label">우선순위</label>
+                        <select id="prioritySelect">
+                            <option value="critical">🚨 최우선</option>
+                            <option value="urgent">🔥 긴급</option>
+                            <option value="high">⚡ 높음</option>
+                            <option value="normal" selected>⚖️ 보통</option>
+                            <option value="low">🧊 낮음</option>
+                            <option value="lowest">🍃 최하</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-row">
+                    <div class="input-group">
+                        <label class="input-label">시작 날짜</label>
+                        <input type="date" id="startDateInput" max="9999-12-31" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">종료 날짜</label>
+                        <input type="date" id="endDateInput" max="9999-12-31" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">담당자 선택</label>
+                    <div class="member-selector" id="memberSelector">
+                        <!-- Members will be injected here -->
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">설명 및 메모</label>
+                    <textarea id="notesInput" placeholder="업무에 대한 상세 설명을 입력하세요..." rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">첨부 파일</label>
+                    <div class="file-upload-container" id="dropZone">
+                        <input type="file" id="fileInput" multiple style="display: none;"
+                            onchange="app.handleFileUpload(this.files)">
+                        <div class="file-upload-placeholder" onclick="document.getElementById('fileInput').click()">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                            <span>클릭하여 파일 선택 또는 드래그 앤 드롭</span>
+                        </div>
+                        <div id="fileList" class="file-list"></div>
+                    </div>
+                </div>
+
+                <!-- Sub-task Section -->
+                <div class="input-group">
+                    <label class="input-label">체크리스트 (Sub-tasks)</label>
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                        <input type="text" id="subTaskInput" placeholder="추가할 하위 업무 입력...">
+                        <button type="button" class="btn-add" style="width: auto; white-space: nowrap;"
+                            onclick="app.handleAddSubTask()">추가</button>
+                    </div>
+                    <div id="subTaskFormList"
+                        style="display: flex; flex-direction: column; gap: 0.5rem; background: rgba(0,0,0,0.02); padding: 1rem; border-radius: 0.5rem;">
+                        <!-- Temp sub-tasks will be here -->
+                    </div>
+                </div>
+
+                <input type="hidden" id="editTaskId">
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" class="btn-add" id="submitBtn">업무 등록하기</button>
+                    <button type="button" class="btn-delete" id="cancelEditBtn" style="display: none; width: auto;"
+                        onclick="app.cancelEdit()">취소</button>
+                </div>
+            </form>
+
+            <div class="section">
+                <h3 class="section-title">🚀 진행 중인 업무</h3>
+                <div class="task-list" id="activeTaskList">
+                    <!-- Tasks will be injected here -->
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-header"
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h3 class="section-title" style="margin-bottom: 0;">✅ 완료된 업무</h3>
+                    <button class="btn-toggle-section" onclick="app.toggleCompletedSection()" id="btnToggleCompleted">
+                        <span id="toggleText">접기</span>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" id="toggleIcon">
+                            <path d="M18 15l-6-6-6 6" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="task-list" id="completedTaskList">
+                    <!-- Completed tasks will be injected here -->
+                </div>
+            </div>
+        </div>
     </main>
 
     <!-- Settings Modal -->
