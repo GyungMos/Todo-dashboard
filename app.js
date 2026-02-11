@@ -1,3 +1,12 @@
+// Global Error Handler for Debugging
+window.onerror = function (msg, url, line, col, error) {
+    // Ignore ResizeObserver errors
+    if (msg.includes('ResizeObserver')) return false;
+    alert("오류 발생: " + msg + "\n라인: " + line);
+    console.error("Global Error:", msg, error);
+    return false;
+};
+
 const app = {
     data: {
         tasks: [],
@@ -400,10 +409,10 @@ const app = {
         const calendarView = document.getElementById('calendarView');
         const dailyView = document.getElementById('dailyView');
 
-        taskForm.style.display = 'none';
-        taskListView.style.display = 'none';
-        dashboardView.style.display = 'none';
-        calendarView.style.display = 'none';
+        if (taskForm) taskForm.style.display = 'none';
+        if (taskListView) taskListView.style.display = 'none';
+        if (dashboardView) dashboardView.style.display = 'none';
+        if (calendarView) calendarView.style.display = 'none';
         if (dailyView) dailyView.style.display = 'none';
 
         if (folder === 'dashboard') {
