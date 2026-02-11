@@ -408,7 +408,11 @@ const app = {
 
         if (folder === 'dashboard') {
             dashboardView.style.display = 'block';
-            this.updateCharts(this.data.tasks);
+            try {
+                this.updateCharts(this.data.tasks);
+            } catch (err) {
+                console.error("Chart update failed:", err);
+            }
             this.updateDashboardWidgets(this.data.tasks);
         } else if (folder === 'daily') {
             if (dailyView) {

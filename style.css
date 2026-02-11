@@ -3063,3 +3063,35 @@ textarea:focus {
     margin-top: 2rem;
 }
 
+
+/* Force Daily View Card Style */
+.daily-main-container {
+    background: #f8fafc !important; /* Slightly darker than white */
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    border-radius: 1rem !important;
+    padding: 2.5rem !important;
+    margin-bottom: 3rem !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 4rem !important;
+    position: relative;
+}
+
+/* Ensure Input Container is clean */
+.daily-input-container {
+    flex: 1;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+/* Ensure Progress Ring is visible */
+.daily-progress-container-right {
+    flex: 0 0 160px !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
