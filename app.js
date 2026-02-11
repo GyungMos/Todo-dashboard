@@ -396,16 +396,23 @@ const app = {
         const taskListView = document.getElementById('taskListView');
         const dashboardView = document.getElementById('dashboardView');
         const calendarView = document.getElementById('calendarView');
+        const dailyView = document.getElementById('dailyView');
 
         taskForm.style.display = 'none';
         taskListView.style.display = 'none';
         dashboardView.style.display = 'none';
         calendarView.style.display = 'none';
+        if (dailyView) dailyView.style.display = 'none';
 
         if (folder === 'dashboard') {
             dashboardView.style.display = 'block';
             this.updateCharts(this.data.tasks);
             this.updateDashboardWidgets(this.data.tasks);
+        } else if (folder === 'daily') {
+            if (dailyView) {
+                dailyView.style.display = 'block';
+                this.switchDailyMode('today');
+            }
         } else if (folder === 'all_with_form') {
             taskForm.style.display = 'block';
             taskListView.style.display = 'block';
@@ -423,16 +430,22 @@ const app = {
     toggleCalendarView(show) {
         const taskListView = document.getElementById('taskListView');
         const calendarView = document.getElementById('calendarView');
+        const dailyView = document.getElementById('dailyView');
         const searchBar = document.querySelector('.filter-section');
 
         if (show) {
             taskListView.style.display = 'none';
+            if (dailyView) dailyView.style.display = 'none';
             calendarView.style.display = 'block';
             if (searchBar) searchBar.style.display = 'none';
             this.data.currentFolder = 'calendar';
             this.initCalendar();
         } else {
+            // 캘린더 닫을 때 이전 뷰로 돌아가는 로직이 복잡할 수 있으므로, 
+            // 일단 기본 목록 뷰로 복귀시킵니다. (또는 직전 폴더 상태 확인 필요)
+            // 여기서는 심플하게 전체 목록으로 갑니다.
             taskListView.style.display = 'block';
+            if (dailyView) dailyView.style.display = 'none';
             calendarView.style.display = 'none';
             if (searchBar) searchBar.style.display = 'block';
         }
