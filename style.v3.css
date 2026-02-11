@@ -3111,3 +3111,14 @@ textarea:focus {
 .stats-value { color: white !important; font-size: 3rem !important; }
 .stats-label { color: yellow !important; }
 
+
+/* REVERT NUCLEAR STYLES */
+.stats-card, .stats-grid div {
+    background: var(--card-bg) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+    min-height: auto !important;
+}
+.stats-value { color: var(--text-main) !important; font-size: 2rem !important; }
+.stats-label { color: var(--text-muted) !important; }
+

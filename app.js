@@ -412,6 +412,7 @@ const app = {
     },
 
     async selectFolder(folder) {
+        console.log(`[selectFolder] Switching to: ${folder}`);
         this.data.currentFolder = folder;
         this.data.statFilter = 'all';
 
