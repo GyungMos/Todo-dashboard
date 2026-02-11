@@ -1657,10 +1657,43 @@ textarea:focus {
     color: var(--text-main);
 }
 
+/* Daily Task List (Grid Layout) */
 .daily-task-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .daily-task-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .daily-task-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Ensure completed list also follows grid */
+#dailyCompletedList {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    #dailyCompletedList {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    #dailyCompletedList {
+        grid-template-columns: repeat(3, 1fr);
+    }
 }
 
 /* Daily Task Item Card Refinement */

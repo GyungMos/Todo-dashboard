@@ -468,25 +468,46 @@ const app = {
         document.getElementById(`tab-${mode}`).classList.add('active');
 
         const todayContent = document.getElementById('dailyTodayContent');
+        const historyControls = document.getElementById('dailyHistoryControls');
         const historyContent = document.getElementById('dailyHistoryContent');
 
         if (mode === 'today') {
             todayContent.style.display = 'block';
+            historyControls.style.display = 'none';
             historyContent.style.display = 'none';
         } else {
             todayContent.style.display = 'none';
+            historyControls.style.display = 'flex'; // Changed to flex for alignment
             historyContent.style.display = 'block';
-            if (!document.getElementById('historyDateInput').value) {
-                document.getElementById('historyDateInput').value = this.getTodayString();
-                this.data.historyDate = this.getTodayString();
+
+            // Set default date range to today if empty
+            if (!document.getElementById('historyStartDate').value) {
+                const today = this.getTodayString();
+                document.getElementById('historyStartDate').value = today;
+                document.getElementById('historyEndDate').value = today;
+                this.data.historyStartDate = today;
+                this.data.historyEndDate = today;
             }
         }
         this.renderDailyTasks();
     },
 
     loadDailyHistory() {
-        const dateInput = document.getElementById('historyDateInput');
-        this.data.historyDate = dateInput.value;
+        const startDate = document.getElementById('historyStartDate').value;
+        const endDate = document.getElementById('historyEndDate').value;
+
+        if (!startDate || !endDate) {
+            alert('시작일과 종료일을 모두 선택해주세요.');
+            return;
+        }
+
+        if (startDate > endDate) {
+            alert('종료일은 시작일 이후여야 합니다.');
+            return;
+        }
+
+        this.data.historyStartDate = startDate;
+        this.data.historyEndDate = endDate;
         this.renderDailyTasks();
     },
 
@@ -591,30 +612,29 @@ const app = {
 
     renderDailyTasks() {
         const isTodayMode = this.data.dailyMode === 'today';
-        const targetDate = isTodayMode ? this.getTodayString() : this.data.historyDate;
 
         if (isTodayMode) {
             const now = new Date();
             const options = { month: 'long', day: 'numeric', weekday: 'long' };
             document.getElementById('dailyDateTitle').textContent = now.toLocaleDateString('ko-KR', options);
+        } else {
+            // History range title
+            const start = this.data.historyStartDate || this.getTodayString();
+            const end = this.data.historyEndDate || this.getTodayString();
+            document.getElementById('dailyHistoryTitle').textContent = `${start} ~ ${end} 기록`;
         }
 
         let tasksToShow = [];
-
         if (isTodayMode) {
-            tasksToShow = this.data.dailyTasks.filter(t => {
-                const isCreatedToday = t.date === targetDate;
-                const isPastUncompleted = t.date < targetDate && !t.completed;
-                const isCompletedToday = t.completed && t.completedAt && t.completedAt.startsWith(targetDate);
-                return isCreatedToday || isPastUncompleted || isCompletedToday;
-            });
+            const today = this.getTodayString();
+            tasksToShow = this.data.dailyTasks.filter(t => t.date === today || (!t.completed && t.date < today));
         } else {
-            tasksToShow = this.data.dailyTasks.filter(t => {
-                const isCreatedOnDate = t.date === targetDate;
-                const isCompletedOnDate = t.completed && t.completedAt && t.completedAt.startsWith(targetDate);
-                return isCreatedOnDate || isCompletedOnDate;
-            });
+            const start = this.data.historyStartDate;
+            const end = this.data.historyEndDate;
+            // Filter tasks within the range (inclusive) and show ALL tasks (completed and not)
+            tasksToShow = this.data.dailyTasks.filter(t => t.date >= start && t.date <= end && t.completed);
         }
+
 
         const priorityOrder = { urgent: 3, high: 2, normal: 1 };
         tasksToShow.sort((a, b) => {
