@@ -2928,3 +2928,55 @@ textarea:focus {
     color: white;
 }
 
+
+/* Daily Main Layout Override */
+.daily-main-container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+.daily-input-container {
+    flex: 1;
+}
+
+.daily-progress-container-right {
+    flex: 0 0 160px;
+    position: sticky;
+    top: 2rem;
+}
+
+.daily-progress-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.progress-text-large {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-top: -85px; /* Overlap circle center */
+    margin-bottom: 2rem;
+}
+
+.progress-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-top: 1rem;
+}
+
+[data-theme='dark'] .daily-progress-card {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+

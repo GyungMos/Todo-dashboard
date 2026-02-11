@@ -17,6 +17,7 @@ const app = {
         showCompleted: true, // Toggle for showing/hiding completed tasks
         dailyTasks: [], // Today's To-Do Data
         dailyMode: 'today', // 'today' or 'history'
+        dailyCategories: ["업무", "개인", "건강", "공부", "기타"], // Daily Categories
         historyDate: new Date().toISOString().split('T')[0] // Default to today
     },
     // 프리미엄 컬러 팔레트 (Professional & Soft)
@@ -82,6 +83,8 @@ const app = {
             const response = await fetch('/api/data');
             const data = await response.json();
             this.data.tasks = data.tasks || [];
+            this.data.dailyCategories = data.dailyCategories || ["업무", "개인", "건강", "공부", "기타"];
+            this.updateCategorySelects(); // Update dropdowns with loaded categories
 
             // 데이터 마이그레이션: 문자열 배열을 객체 배열로 변환 및 색상 할당
             if (data.folders && data.folders.length > 0) {
@@ -828,8 +831,8 @@ const app = {
     },
 
     updateProgressRing(percent) {
-        const circle = document.querySelector('.progress-ring__circle');
-        const text = document.querySelector('.progress-text');
+        const circle = document.querySelector('.progress-ring-large .progress-ring__circle');
+        const text = document.querySelector('.progress-text-large');
         if (!circle || !text) return;
 
         const radius = circle.r.baseVal.value;
@@ -1833,6 +1836,9 @@ const app = {
             this.switchSettingsTab('category');
             this.renderFolderSettings();
             this.renderMembersInSettings();
+            this.renderFolderSettings();
+            this.renderMembersInSettings();
+            this.renderDailyCategories(); // Render Daily Categories
             this.renderColorPalette();
         }
         this.updateSidebarUI();
@@ -2076,7 +2082,102 @@ const app = {
         reader.readAsText(file);
     },
 
-    syncWithECount(task) { console.log("Syncing with E-Count API...", task); }
+    syncWithECount(task) { console.log("Syncing with E-Count API...", task); },
+
+    // --- Daily Category Management ---
+    renderDailyCategories() {
+        const list = document.getElementById('settingsDailyList');
+        if (!list) return;
+
+        list.innerHTML = this.data.dailyCategories.map(cat => `
+            <div class="settings-item">
+                <span class="settings-item-name">${cat}</span>
+                <div class="settings-item-actions">
+                    <button class="btn-icon edit" onclick="app.handleEditDailyCategory('${cat}')" title="수정">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    </button>
+                    <button class="btn-icon delete" onclick="app.handleDeleteDailyCategory('${cat}')" title="삭제">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    async handleEditDailyCategory(oldName) {
+        const newName = prompt(`'${oldName}' 카테고리의 새 이름을 입력하세요:`, oldName);
+        if (newName && newName.trim() !== "" && newName !== oldName) {
+            const trimmedName = newName.trim();
+            if (this.data.dailyCategories.includes(trimmedName)) {
+                alert("이미 존재하는 카테고리 이름입니다.");
+                return;
+            }
+
+            const index = this.data.dailyCategories.indexOf(oldName);
+            if (index > -1) {
+                this.data.dailyCategories[index] = trimmedName;
+
+                // Update category in existing daily tasks
+                this.data.dailyTasks.forEach(task => {
+                    if (task.category === oldName) {
+                        task.category = trimmedName;
+                    }
+                });
+
+                await this.saveData();
+                this.renderDailyCategories();
+                this.updateCategorySelects();
+                this.renderDailyTasks(); // Re-render tasks to show new category name
+            }
+        }
+    },
+
+    async addDailyCategory() {
+        const input = document.getElementById('newDailyCategoryName');
+        const name = input.value.trim();
+        if (name && !this.data.dailyCategories.includes(name)) {
+            this.data.dailyCategories.push(name);
+            await this.saveData();
+            this.renderDailyCategories();
+            this.updateCategorySelects();
+            input.value = '';
+        } else if (name) {
+            alert("이미 존재하는 카테고리입니다.");
+        }
+    },
+
+    async handleDeleteDailyCategory(name) {
+        if (confirm(`'${name}' 카테고리를 삭제하시겠습니까?`)) {
+            this.data.dailyCategories = this.data.dailyCategories.filter(c => c !== name);
+            await this.saveData();
+            this.renderDailyCategories();
+            this.updateCategorySelects();
+        }
+    },
+
+    updateCategorySelects() {
+        const optionsHtml = this.data.dailyCategories.map(cat => {
+            let icon = '📌';
+            if (cat === '업무') icon = '🏢';
+            else if (cat === '개인') icon = '🏠';
+            else if (cat === '건강') icon = '💪';
+            else if (cat === '공부') icon = '📚';
+            else if (cat === '기타') icon = 'ETC';
+
+            return `<option value="${cat}">${icon} ${cat}</option>`;
+        }).join('');
+
+        const dailySelect = document.getElementById('dailyCategorySelect');
+        const editSelect = document.getElementById('editTaskCategory');
+
+        if (dailySelect) dailySelect.innerHTML = optionsHtml;
+        if (editSelect) editSelect.innerHTML = optionsHtml;
+    }
 };
 
 document.addEventListener('DOMContentLoaded', () => app.init());
